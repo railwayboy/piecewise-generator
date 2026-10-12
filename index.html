@@ -104,9 +104,9 @@
                 <div>
                     <h1 class="text-lg font-bold text-white tracking-tight flex items-center gap-2">
                         Piecewise Math Lab
-                        <span class="text-xs bg-brand-500/20 text-brand-300 font-medium px-2 py-0.5 rounded-full border border-brand-500/30">v3.0</span>
+                        <span class="text-xs bg-brand-500/20 text-brand-300 font-medium px-2 py-0.5 rounded-full border border-brand-500/30">v3.5</span>
                     </h1>
-                    <p class="text-xs text-slate-400">Build, plot, and export piecewise functions for documents & worksheets</p>
+                    <p class="text-xs text-slate-400">Build, plot, render notation, and export piecewise functions for documents & worksheets</p>
                 </div>
             </div>
 
@@ -117,7 +117,7 @@
                     <select id="presetSelect" onchange="loadPreset(this.value)" class="glass-input text-xs rounded-lg px-3 py-2 pr-8 text-slate-200 cursor-pointer appearance-none bg-slate-800">
                         <option value="" disabled selected>Select a Preset...</option>
                         <option value="abs">Absolute Value f(x) = |x|</option>
-                        <option value="heaviside">Heaviside Step H(x)</option>
+                        <option value="heaviside">Heaviside Step H(t)</option>
                         <option value="signum">Signum Function sgn(x)</option>
                         <option value="triangular">Triangle Pulse</option>
                         <option value="tax">Tax Bracket Model</option>
@@ -141,16 +141,16 @@
             <!-- Global Function Settings Card -->
             <div class="glass-panel rounded-2xl p-4 sm:p-5 shadow-xl">
                 <h2 class="text-sm font-semibold text-slate-200 uppercase tracking-wider mb-3.5 flex items-center gap-2">
-                    <i class="fa-solid fa-sliders text-brand-400"></i> Function Parameters
+                    <i class="fa-solid fa-sliders text-brand-400"></i> Function Symbols
                 </h2>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs text-slate-400 mb-1">Function Symbol</label>
-                        <input type="text" id="funcName" value="f" oninput="updateAll()" class="w-full glass-input rounded-lg px-3 py-1.5 text-sm font-mono text-brand-300">
+                        <input type="text" id="funcName" value="f" oninput="updateAll()" placeholder="e.g. f, g, H, \psi" class="w-full glass-input rounded-lg px-3 py-1.5 text-sm font-mono text-brand-300">
                     </div>
                     <div>
                         <label class="block text-xs text-slate-400 mb-1">Variable Symbol</label>
-                        <input type="text" id="varName" value="x" oninput="updateAll()" class="w-full glass-input rounded-lg px-3 py-1.5 text-sm font-mono text-emerald-400">
+                        <input type="text" id="varName" value="x" oninput="updateAll()" placeholder="e.g. x, t, \theta" class="w-full glass-input rounded-lg px-3 py-1.5 text-sm font-mono text-emerald-400">
                     </div>
                 </div>
             </div>
@@ -178,124 +178,134 @@
         </section>
 
         <!-- RIGHT COLUMN: Notation Preview, Visual Graph & Export (7 cols) -->
-    <section class="lg:col-span-7 flex flex-col space-y-6">
+        <section class="lg:col-span-7 flex flex-col space-y-6">
 
-        <!-- 1. Live Mathematical Notation Preview Box -->
             <div class="glass-panel rounded-2xl p-5 shadow-xl relative overflow-hidden group">
                 <div class="absolute top-0 right-0 w-32 h-32 bg-brand-500/10 rounded-full blur-2xl pointer-events-none"></div>
                 
-                <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
+                <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
                     <span class="text-xs font-semibold text-brand-400 uppercase tracking-wider flex items-center gap-1.5">
-                        <i class="fa-solid fa-square-root-variable"></i> Rendered Notation
+                        <i class="fa-solid fa-square-root-variable"></i> Rendered Notation Studio
                     </span>
                     
-                    <div class="flex items-center space-x-2">
-                        <!-- Color theme picker for transparent image export -->
-                        <select id="imgTextColor" class="glass-input text-[11px] rounded-lg px-2.5 py-1 text-slate-300 bg-slate-900 border-slate-700 cursor-pointer" title="Text color when copying transparent PNG image for worksheets">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <!-- Math Image Color & Size Options -->
+                        <select id="imgTextColor" class="glass-input text-[11px] rounded-lg px-2.5 py-1 text-slate-300 bg-slate-900 border-slate-700 cursor-pointer" title="Text color when exporting math image for worksheets or presentations">
                             <option value="#000000">Dark Text (For Worksheets)</option>
-                            <option value="#ffffff" selected>Light Text (For Dark Theme)</option>
+                            <option value="#ffffff" selected>Light Text (For Dark Slides)</option>
                             <option value="current">Current Theme</option>
+                        </select>
+
+                        <select id="imgScale" class="glass-input text-[11px] rounded-lg px-2 py-1 text-slate-300 bg-slate-900 border-slate-700 cursor-pointer" title="Export Font Size Scale">
+                            <option value="1">1x Size</option>
+                            <option value="1.5" selected>1.5x Medium</option>
+                            <option value="2">2x Large</option>
                         </select>
 
                         <!-- Copy Math Image Button -->
                         <button onclick="copyImageToClipboard()" class="px-3 py-1 rounded-lg bg-brand-600 hover:bg-brand-500 text-white text-xs font-medium transition flex items-center gap-1.5 shadow-md active:scale-95">
                             <i class="fa-regular fa-image"></i>
-                            <span>Copy Math Image</span>
+                            <span>Copy Image</span>
+                        </button>
+
+                        <!-- Download Math Image Button -->
+                        <button onclick="downloadMathImage()" title="Download Math Image PNG" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition flex items-center gap-1 active:scale-95">
+                            <i class="fa-solid fa-download"></i>
                         </button>
                     </div>
                 </div>
 
-                <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-4 sm:p-6 min-h-[100px] flex items-center justify-center shadow-inner overflow-x-auto">
+                <!-- Rendered KaTeX Box -->
+                <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-4 sm:p-6 min-h-[110px] flex items-center justify-center shadow-inner overflow-x-auto">
                     <div id="katexOutput" class="text-lg sm:text-xl text-white"></div>
                 </div>
             </div>
 
-            <!-- 2. Interactive Function Plotter & Worksheet Graph Studio -->
-        <div class="glass-panel rounded-2xl p-5 shadow-xl space-y-4">
-            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
-                <div class="flex items-center space-x-2">
-                    <h2 class="text-sm font-semibold text-slate-200 uppercase tracking-wider flex items-center gap-2">
-                        <i class="fa-solid fa-chart-line text-brand-400"></i> Interactive Graph Studio
-                    </h2>
+            <div class="glass-panel rounded-2xl p-5 shadow-xl space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                    <div class="flex items-center space-x-2">
+                        <h2 class="text-sm font-semibold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-chart-line text-brand-400"></i> Interactive Graph Studio
+                        </h2>
+                    </div>
+
+                    <!-- Graph Visual Style Selection -->
+                    <div class="flex items-center space-x-2">
+                        <label for="graphStyleSelect" class="text-xs text-slate-400 font-medium">Graph Style:</label>
+                        <select id="graphStyleSelect" onchange="drawGraph()" class="glass-input text-xs rounded-xl px-3 py-1.5 text-slate-200 bg-slate-900 border-slate-700 cursor-pointer focus:ring-1 focus:ring-brand-500">
+                            <option value="dark" selected>Dark Glass (Neon)</option>
+                            <option value="worksheet">Worksheet (Clean White Print)</option>
+                            <option value="gridpaper">Blue Grid Paper</option>
+                            <option value="transparent-dark">Transparent (Dark Grid)</option>
+                            <option value="transparent-light">Transparent (Light Grid)</option>
+                        </select>
+                    </div>
                 </div>
 
-                <!-- Unified Graph Visual Style Selection -->
-                <div class="flex items-center space-x-2">
-                    <label for="graphStyleSelect" class="text-xs text-slate-400 font-medium">Graph Style:</label>
-                    <select id="graphStyleSelect" onchange="drawGraph()" class="glass-input text-xs rounded-xl px-3 py-1.5 text-slate-200 bg-slate-900 border-slate-700 cursor-pointer focus:ring-1 focus:ring-brand-500">
-                        <option value="dark" selected>Dark Glass (Neon)</option>
-                        <option value="worksheet">Worksheet (Clean White Print)</option>
-                        <option value="gridpaper">Blue Grid Paper</option>
-                        <option value="transparent-dark">Transparent (Dark Grid)</option>
-                        <option value="transparent-light">Transparent (Light Grid)</option>
-                    </select>
-                </div>
-            </div>
+                <!-- Export & Range Toolstrip -->
+                <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-900/60 p-3 rounded-xl border border-slate-800/80 text-xs">
+                    
+                    <!-- Bounds & Interval Step Controls -->
+                    <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+                        <div class="flex items-center space-x-1">
+                            <span class="text-slate-400 font-mono text-[11px] font-semibold">X:</span>
+                            <input type="number" id="graphXMin" value="-10" step="any" onchange="drawGraph()" class="w-13 glass-input text-center rounded px-1.5 py-0.5 text-xs text-slate-200" title="X Minimum">
+                            <span class="text-slate-500 text-[11px]">to</span>
+                            <input type="number" id="graphXMax" value="10" step="any" onchange="drawGraph()" class="w-13 glass-input text-center rounded px-1.5 py-0.5 text-xs text-slate-200" title="X Maximum">
+                            <span class="text-slate-500 text-[10px] ml-0.5">step:</span>
+                            <input type="number" id="graphXStep" value="1" min="0.01" step="any" placeholder="Auto" onchange="drawGraph()" class="w-12 glass-input text-center rounded px-1 py-0.5 text-xs text-slate-200" title="X-axis tick interval / step size">
+                        </div>
 
-            <!-- Export & Range Toolstrip -->
-            <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-900/60 p-3 rounded-xl border border-slate-800/80 text-xs">
-                
-                <!-- Bounds & Interval Step Controls -->
-                <div class="flex flex-wrap items-center gap-2 sm:gap-3">
-                    <div class="flex items-center space-x-1">
-                        <span class="text-slate-400 font-mono text-[11px] font-semibold">X:</span>
-                        <input type="number" id="graphXMin" value="-10" step="any" onchange="drawGraph()" class="w-13 glass-input text-center rounded px-1.5 py-0.5 text-xs text-slate-200" title="X Minimum">
-                        <span class="text-slate-500 text-[11px]">to</span>
-                        <input type="number" id="graphXMax" value="10" step="any" onchange="drawGraph()" class="w-13 glass-input text-center rounded px-1.5 py-0.5 text-xs text-slate-200" title="X Maximum">
-                        <span class="text-slate-500 text-[10px] ml-0.5">step:</span>
-                        <input type="number" id="graphXStep" value="1" min="0.01" step="any" placeholder="Auto" onchange="drawGraph()" class="w-12 glass-input text-center rounded px-1 py-0.5 text-xs text-slate-200" title="X-axis tick interval / step size">
+                        <div class="flex items-center space-x-1">
+                            <span class="text-slate-400 font-mono text-[11px] font-semibold">Y:</span>
+                            <input type="number" id="graphYMin" value="-5" step="any" onchange="manualYChange()" class="w-13 glass-input text-center rounded px-1.5 py-0.5 text-xs text-slate-200" title="Y Minimum">
+                            <span class="text-slate-500 text-[11px]">to</span>
+                            <input type="number" id="graphYMax" value="5" step="any" onchange="manualYChange()" class="w-13 glass-input text-center rounded px-1.5 py-0.5 text-xs text-slate-200" title="Y Maximum">
+                            <span class="text-slate-500 text-[10px] ml-0.5">step:</span>
+                            <input type="number" id="graphYStep" value="1" min="0.01" step="any" placeholder="Auto" onchange="drawGraph()" class="w-12 glass-input text-center rounded px-1 py-0.5 text-xs text-slate-200" title="Y-axis tick interval / step size">
+                        </div>
+
+                        <div class="flex items-center space-x-2.5 border-l border-slate-800 pl-2">
+                            <label class="flex items-center space-x-1 cursor-pointer text-slate-400 hover:text-slate-200 text-[11px] select-none" title="Auto-scale Y bounds to fit active function values">
+                                <input type="checkbox" id="autoYToggle" checked onchange="drawGraph()" class="rounded bg-slate-800 border-slate-700 text-brand-600 focus:ring-brand-500">
+                                <span>Auto Y</span>
+                            </label>
+
+                            <label class="flex items-center space-x-1 cursor-pointer text-slate-400 hover:text-slate-200 text-[11px] select-none" title="Force 1:1 scale so 1 unit X equals 1 unit Y visually">
+                                <input type="checkbox" id="squareAspectToggle" onchange="drawGraph()" class="rounded bg-slate-800 border-slate-700 text-brand-600 focus:ring-brand-500">
+                                <span>1:1 Scale</span>
+                            </label>
+                        </div>
+
+                        <!-- Zoom & Reset Action Group -->
+                        <div class="flex items-center space-x-1 border-l border-slate-800 pl-2">
+                            <button onclick="zoomInGraph()" title="Zoom In (+)" class="p-1 px-2 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-bold transition active:scale-95">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                            <button onclick="zoomOutGraph()" title="Zoom Out (-)" class="p-1 px-2 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-bold transition active:scale-95">
+                                <i class="fa-solid fa-minus"></i>
+                            </button>
+                            <button onclick="resetGraphZoom()" title="Reset Graph Bounds" class="p-1 px-2 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] transition active:scale-95">
+                                <i class="fa-solid fa-rotate-left"></i> Reset
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="flex items-center space-x-1">
-                        <span class="text-slate-400 font-mono text-[11px] font-semibold">Y:</span>
-                        <input type="number" id="graphYMin" value="-5" step="any" onchange="manualYChange()" class="w-13 glass-input text-center rounded px-1.5 py-0.5 text-xs text-slate-200" title="Y Minimum">
-                        <span class="text-slate-500 text-[11px]">to</span>
-                        <input type="number" id="graphYMax" value="5" step="any" onchange="manualYChange()" class="w-13 glass-input text-center rounded px-1.5 py-0.5 text-xs text-slate-200" title="Y Maximum">
-                        <span class="text-slate-500 text-[10px] ml-0.5">step:</span>
-                        <input type="number" id="graphYStep" value="1" min="0.01" step="any" placeholder="Auto" onchange="drawGraph()" class="w-12 glass-input text-center rounded px-1 py-0.5 text-xs text-slate-200" title="Y-axis tick interval / step size">
-                    </div>
-
-                    <div class="flex items-center space-x-2.5 border-l border-slate-800 pl-2">
-                        <label class="flex items-center space-x-1 cursor-pointer text-slate-400 hover:text-slate-200 text-[11px] select-none" title="Auto-scale Y bounds to fit active function values">
-                            <input type="checkbox" id="autoYToggle" checked onchange="drawGraph()" class="rounded bg-slate-800 border-slate-700 text-brand-600 focus:ring-brand-500">
-                            <span>Auto Y</span>
-                        </label>
-
-                        <label class="flex items-center space-x-1 cursor-pointer text-slate-400 hover:text-slate-200 text-[11px] select-none" title="Force 1:1 scale so 1 unit X equals 1 unit Y visually">
-                            <input type="checkbox" id="squareAspectToggle" onchange="drawGraph()" class="rounded bg-slate-800 border-slate-700 text-brand-600 focus:ring-brand-500">
-                            <span>1:1 Scale</span>
-                        </label>
-                    </div>
-
-                    <!-- Zoom & Reset Action Group -->
-                    <div class="flex items-center space-x-1 border-l border-slate-800 pl-2">
-                        <button onclick="zoomInGraph()" title="Zoom In (+)" class="p-1 px-2 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-bold transition active:scale-95">
-                            <i class="fa-solid fa-plus"></i>
+                    <!-- Graph Image Copy Controls -->
+                    <div class="flex items-center space-x-2">
+                        <button onclick="copyGraphToClipboard()" title="Copy Graph Image to Clipboard" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium transition flex items-center gap-1.5 shadow active:scale-95">
+                            <i class="fa-regular fa-copy"></i>
+                            <span>Copy Graph</span>
                         </button>
-                        <button onclick="zoomOutGraph()" title="Zoom Out (-)" class="p-1 px-2 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-bold transition active:scale-95">
-                            <i class="fa-solid fa-minus"></i>
-                        </button>
-                        <button onclick="resetGraphZoom()" title="Reset Graph Bounds" class="p-1 px-2 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] transition active:scale-95">
-                            <i class="fa-solid fa-rotate-left"></i> Reset
+
+                        <button onclick="downloadGraphImage()" title="Download Graph PNG" class="p-1.5 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-xs transition">
+                            <i class="fa-solid fa-download"></i>
                         </button>
                     </div>
                 </div>
 
-                <!-- Graph Image Copy Controls -->
-                <div class="flex items-center space-x-2">
-                    <button onclick="copyGraphToClipboard()" title="Copy Graph Image to Clipboard" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium transition flex items-center gap-1.5 shadow active:scale-95">
-                        <i class="fa-regular fa-copy"></i>
-                        <span>Copy Graph</span>
-                    </button>
-
-                    <button onclick="downloadGraphImage()" title="Download Graph PNG" class="p-1.5 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-xs transition">
-                        <i class="fa-solid fa-download"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Canvas Graph Container -->
-            <div id="canvasWrapper" class="relative w-full h-[280px] rounded-xl border border-slate-800 overflow-hidden shadow-inner transition-colors duration-200 bg-slate-950">
+                <!-- Canvas Graph Container -->
+                <div id="canvasWrapper" class="relative w-full h-[280px] rounded-xl border border-slate-800 overflow-hidden shadow-inner transition-colors duration-200 bg-slate-950">
                     <canvas id="graphCanvas" class="w-full h-full cursor-grab active:cursor-grabbing"></canvas>
 
                     <!-- Interactive Guide Badge -->
@@ -342,7 +352,6 @@
                 </div>
             </div>
 
-            <!-- 3. Export Code Formats -->
             <div class="glass-panel rounded-2xl p-5 shadow-xl space-y-3">
                 <div class="flex items-center justify-between border-b border-slate-800 pb-3 flex-wrap gap-2">
                     <div class="flex items-center space-x-1 sm:space-x-2 overflow-x-auto text-xs font-medium">
@@ -570,7 +579,7 @@
                         <span class="col-span-3 text-xs text-slate-400 font-mono">Expr:</span>
                         <input type="text" value="${escapeHtml(piece.expr)}" 
                             oninput="updatePieceExpr('${piece.id}', this.value)" 
-                            placeholder="e.g. x^2 - 1" 
+                            placeholder="e.g. x^2 - 1, sin(x), \frac{1}{2}x" 
                             class="col-span-9 glass-input rounded-lg px-2.5 py-1 text-xs font-mono text-white">
                     </div>
 
@@ -707,18 +716,23 @@
             if (piece.mode === 'raw') {
                 let cond = piece.condExpr || '';
                 if (!cond.includes('\\')) {
-                    cond = cond.replace(/<=/g, '\\le ')
-                               .replace(/>=/g, '\\ge ')
-                               .replace(/!=/g, '\\neq ');
+                    cond = cond.replace(/(?<!\\)<=/g, '\\le ')
+                               .replace(/(?<!\\)>=/g, '\\ge ')
+                               .replace(/(?<!\\)!=/g, '\\neq ');
                 }
+                cond = cond.replace(/(?<![\\a-zA-Z])pi\b/g, '\\pi')
+                           .replace(/(?<![\\a-zA-Z])infty\b/g, '\\infty')
+                           .replace(/(?<![\\a-zA-Z])infinity\b/g, '\\infty');
                 return cond;
             }
             
             let min = piece.minVal.trim();
             let max = piece.maxVal.trim();
 
-            min = min.replace(/<=/g, '\\le ').replace(/>=/g, '\\ge ').replace(/!=/g, '\\neq ');
-            max = max.replace(/<=/g, '\\le ').replace(/>=/g, '\\ge ').replace(/!=/g, '\\neq ');
+            min = min.replace(/(?<!\\)<=/g, '\\le ').replace(/(?<!\\)>=/g, '\\ge ').replace(/(?<!\\)!=/g, '\\neq ')
+                     .replace(/(?<![\\a-zA-Z])pi\b/g, '\\pi').replace(/(?<![\\a-zA-Z])infty\b/g, '\\infty');
+            max = max.replace(/(?<!\\)<=/g, '\\le ').replace(/(?<!\\)>=/g, '\\ge ').replace(/(?<!\\)!=/g, '\\neq ')
+                     .replace(/(?<![\\a-zA-Z])pi\b/g, '\\pi').replace(/(?<![\\a-zA-Z])infty\b/g, '\\infty');
 
             const minOp = piece.minInc ? '\\le' : '<';
             const maxOp = piece.maxInc ? '\\le' : '<';
@@ -733,6 +747,37 @@
             } else {
                 return '\\text{all } ' + vr;
             }
+        }
+
+        function cleanMathExprForLaTeX(expr) {
+            if (!expr) return '0';
+            let s = expr.trim();
+            
+            // Avoid double escaping LaTeX commands (e.g., \\sin -> \sin)
+            s = s.replace(/\\+(\w+)/g, (m, p1) => '\\' + p1);
+
+            // Convert common math functions to LaTeX if not already backslashed
+            const funcs = ['sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'sinh', 'cosh', 'tanh', 'log', 'ln', 'exp'];
+            funcs.forEach(fn => {
+                const regex = new RegExp('(?<![\\\\a-zA-Z])' + fn + '\\b', 'g');
+                s = s.replace(regex, '\\' + fn);
+            });
+
+            // Handle roots and absolute values safely
+            s = s.replace(/(?<![\\a-zA-Z])sqrt\s*\(([^()]+)\)/g, '\\sqrt{$1}');
+            s = s.replace(/(?<![\\a-zA-Z])abs\s*\(([^()]+)\)/g, '\\left|$1\\right|');
+
+            // Handle division fractions: (a)/(b) or a/b
+            s = s.replace(/([a-zA-Z0-9_\^\+\-\*]+)\s*\/\s*([a-zA-Z0-9_\^\+\-\*]+)/g, '\\frac{$1}{$2}');
+
+            // Handle pi and infinity
+            s = s.replace(/(?<![\\a-zA-Z])pi\b/g, '\\pi');
+            s = s.replace(/(?<![\\a-zA-Z])infty\b/g, '\\infty');
+
+            // Handle multiplication star
+            s = s.replace(/\*/g, ' ');
+
+            return s;
         }
 
         function sanitizeLatexForMathJS(str) {
@@ -789,17 +834,6 @@
             } catch (err) {
                 document.getElementById('katexOutput').textContent = latexStr;
             }
-        }
-
-        function cleanMathExprForLaTeX(expr) {
-            if (!expr) return '0';
-            return expr
-                .replace(/\*/g, ' ')
-                .replace(/sqrt\(([^)]+)\)/g, '\\sqrt{$1}')
-                .replace(/sin\(([^)]+)\)/g, '\\sin($1)')
-                .replace(/cos\(([^)]+)\)/g, '\\cos($1)')
-                .replace(/tan\(([^)]+)\)/g, '\\tan($1)')
-                .replace(/abs\(([^)]+)\)/g, '|$1|');
         }
 
         function updateCodeOutput() {
@@ -980,10 +1014,43 @@
         }
 
         async function copyImageToClipboard() {
+            const blob = await generateMathImageBlob();
+            if (!blob) return;
+
+            try {
+                if (navigator.clipboard && window.ClipboardItem) {
+                    await navigator.clipboard.write([
+                        new ClipboardItem({ 'image/png': blob })
+                    ]);
+                    showToast('Transparent Math PNG copied to clipboard!');
+                } else {
+                    downloadMathImage();
+                }
+            } catch (err) {
+                console.error('Copy image failed:', err);
+                downloadMathImage();
+            }
+        }
+
+        async function downloadMathImage() {
+            const blob = await generateMathImageBlob();
+            if (!blob) return;
+
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `piecewise-math-${getFuncName()}.png`;
+            a.click();
+            showToast('Math PNG downloaded!');
+        }
+
+        async function generateMathImageBlob() {
             const katexEl = document.getElementById('katexOutput');
-            if (!katexEl) return;
+            if (!katexEl) return null;
 
             const selectedColorOption = document.getElementById('imgTextColor').value;
+            const scaleFactor = parseFloat(document.getElementById('imgScale').value) || 1.5;
+
             let targetColor = '#ffffff';
             if (selectedColorOption === '#000000') {
                 targetColor = '#000000';
@@ -995,10 +1062,12 @@
             wrapper.style.position = 'absolute';
             wrapper.style.left = '-9999px';
             wrapper.style.top = '-9999px';
-            wrapper.style.padding = '24px 32px';
+            wrapper.style.padding = `${Math.round(20 * scaleFactor)}px ${Math.round(30 * scaleFactor)}px`;
             wrapper.style.background = 'transparent';
             wrapper.style.color = targetColor;
             wrapper.style.display = 'inline-block';
+            wrapper.style.transform = `scale(${scaleFactor})`;
+            wrapper.style.transformOrigin = 'top left';
             
             wrapper.innerHTML = katexEl.innerHTML;
             document.body.appendChild(wrapper);
@@ -1021,44 +1090,12 @@
                 });
 
                 document.body.removeChild(wrapper);
-
-                if (blob && navigator.clipboard && window.ClipboardItem) {
-                    await navigator.clipboard.write([
-                        new ClipboardItem({ 'image/png': blob })
-                    ]);
-                    showToast('Transparent Math PNG copied to clipboard!');
-                } else if (blob) {
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'piecewise-function.png';
-                    a.click();
-                    showToast('Math image downloaded as PNG file!');
-                }
+                return blob;
             } catch (err) {
                 if (document.body.contains(wrapper)) document.body.removeChild(wrapper);
-                console.error('Copy image failed:', err);
-                showToast('Unable to copy image directly. Try right-clicking preview.');
+                console.error('Image generation failed:', err);
+                return null;
             }
-        }
-
-        function setGraphTheme(theme) {
-            currentGraphTheme = theme;
-            const darkBtn = document.getElementById('themeBtnDark');
-            const wsBtn = document.getElementById('themeBtnWorksheet');
-            const wrapper = document.getElementById('canvasWrapper');
-
-            if (theme === 'worksheet') {
-                wsBtn.className = 'px-2.5 py-1 rounded-lg font-medium transition flex items-center gap-1.5 text-slate-900 bg-white shadow-sm';
-                darkBtn.className = 'px-2.5 py-1 rounded-lg font-medium transition flex items-center gap-1.5 text-slate-400 hover:text-slate-200';
-                wrapper.className = 'relative w-full h-[280px] rounded-xl border border-slate-300 overflow-hidden shadow-inner transition-colors duration-200 bg-white';
-            } else {
-                darkBtn.className = 'px-2.5 py-1 rounded-lg font-medium transition flex items-center gap-1.5 text-brand-300 bg-slate-800 shadow-sm';
-                wsBtn.className = 'px-2.5 py-1 rounded-lg font-medium transition flex items-center gap-1.5 text-slate-400 hover:text-slate-200';
-                wrapper.className = 'relative w-full h-[280px] rounded-xl border border-slate-800 overflow-hidden shadow-inner transition-colors duration-200 bg-slate-950';
-            }
-
-            drawGraph();
         }
 
         function resetGraphZoom() {
@@ -1102,7 +1139,6 @@
             let xRange = (xMax - xMin) * factor;
             let yRange = (yMax - yMin) * factor;
 
-            // Safety limit guards on extreme zoom
             if (xRange < 0.1 || yRange < 0.1) return;
             if (xRange > 1000 || yRange > 1000) return;
 
@@ -1116,9 +1152,7 @@
             document.getElementById('graphYMin').value = parseFloat(newYMin.toFixed(2));
             document.getElementById('graphYMax').value = parseFloat(newYMax.toFixed(2));
 
-            // Disable auto Y so explicit zoom viewport is preserved
             document.getElementById('autoYToggle').checked = false;
-
             drawGraph();
         }
 
@@ -1134,7 +1168,6 @@
 
             const selectedStyle = document.getElementById('graphStyleSelect')?.value || 'dark';
 
-            // Update wrapper background according to style
             const wrapper = document.getElementById('canvasWrapper');
             if (wrapper && !isCustomCanvas) {
                 if (selectedStyle === 'worksheet' || selectedStyle === 'gridpaper') {
@@ -1179,7 +1212,7 @@
                 colorPalette = WORKSHEET_COLORS;
             } else if (selectedStyle === 'gridpaper') {
                 bgFill = '#f8fafc';
-                gridColor = 'rgba(59, 130, 246, 0.22)'; // Light blue blueprint grid
+                gridColor = 'rgba(59, 130, 246, 0.22)';
                 axisColor = '#1e3a8a';
                 textColor = '#1e3a8a';
                 colorPalette = WORKSHEET_COLORS;
@@ -1237,7 +1270,6 @@
                 }
             }
 
-            // 1:1 Aspect Ratio Scaling
             if (squareAspect) {
                 let yCenter = (yMin + yMax) / 2;
                 let requiredYSpan = (xMax - xMin) * (height / width);
@@ -1253,7 +1285,6 @@
             const toScreenX = (x) => ((x - xMin) / (xMax - xMin)) * width;
             const toScreenY = (y) => height - ((y - yMin) / (yMax - yMin)) * height;
 
-            // Step Intervals
             let customXStep = parseFloat(document.getElementById('graphXStep').value);
             let customYStep = parseFloat(document.getElementById('graphYStep').value);
 
@@ -1320,7 +1351,6 @@
             ctx.fillText(getVar(), width - 18 * dpr, Math.max(20 * dpr, zeroY - 8 * dpr));
             ctx.fillText(getFuncName() + '(' + getVar() + ')', Math.max(10 * dpr, zeroX + 8 * dpr), 20 * dpr);
 
-            // Plot Sub-Function Curves
             const isLightBg = selectedStyle === 'worksheet' || selectedStyle === 'gridpaper';
 
             pieces.forEach((piece, pIdx) => {
@@ -1366,7 +1396,6 @@
                 }
                 ctx.stroke();
 
-                // Plot Endpoint Dots for Bounded Intervals
                 if (piece.mode === 'bounded') {
                     let min = parseFloat(piece.minVal);
                     let max = parseFloat(piece.maxVal);
@@ -1460,7 +1489,6 @@
             let touchStartDist = 0;
             let initialPinchZoom = false;
 
-            // 1. Hover Tooltip Coordinates
             canvas.addEventListener('mousemove', (e) => {
                 const rect = canvas.getBoundingClientRect();
                 const mouseX = e.clientX - rect.left;
@@ -1488,7 +1516,6 @@
                 tooltip.style.display = 'none';
             });
 
-            // 2. Mouse Wheel Scroll Zoom (Centered on Cursor)
             canvas.addEventListener('wheel', (e) => {
                 e.preventDefault();
                 const rect = canvas.getBoundingClientRect();
@@ -1510,9 +1537,8 @@
                 applyZoom(cx, cy, rx, ry, zoomFactor);
             }, { passive: false });
 
-            // 3. Click & Drag Panning
             canvas.addEventListener('mousedown', (e) => {
-                if (e.button !== 0) return; // Left click only
+                if (e.button !== 0) return;
                 isDragging = true;
                 startX = e.clientX;
                 startY = e.clientY;
@@ -1549,7 +1575,6 @@
                 isDragging = false;
             });
 
-            // 4. Touch Drag Pan & Pinch Zoom
             canvas.addEventListener('touchstart', (e) => {
                 if (e.touches.length === 1) {
                     isDragging = true;
