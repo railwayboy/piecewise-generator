@@ -31,6 +31,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
 
+    <!-- HTML-to-Image for Transparent PNG Export -->
+    <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js"></script>
+
     <!-- Math.js for Safe Expression Evaluation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
 
@@ -101,9 +104,9 @@
                 <div>
                     <h1 class="text-lg font-bold text-white tracking-tight flex items-center gap-2">
                         Piecewise Math Lab
-                        <span class="text-xs bg-brand-500/20 text-brand-300 font-medium px-2 py-0.5 rounded-full border border-brand-500/30">v2.1</span>
+                        <span class="text-xs bg-brand-500/20 text-brand-300 font-medium px-2 py-0.5 rounded-full border border-brand-500/30">v3.0</span>
                     </h1>
-                    <p class="text-xs text-slate-400">Build, visualize, and export piecewise functions cleanly</p>
+                    <p class="text-xs text-slate-400">Build, plot, and export piecewise functions for documents & worksheets</p>
                 </div>
             </div>
 
@@ -174,18 +177,32 @@
             </div>
         </section>
 
-        <!-- RIGHT COLUMN: Preview, Export Formats, Graph & Evaluator (7 cols) -->
-        <section class="lg:col-span-7 flex flex-col space-y-6">
+        <!-- RIGHT COLUMN: Notation Preview, Visual Graph & Export (7 cols) -->
+    <section class="lg:col-span-7 flex flex-col space-y-6">
 
-            <!-- 1. Live Mathematical Notation Preview Box -->
+        <!-- 1. Live Mathematical Notation Preview Box -->
             <div class="glass-panel rounded-2xl p-5 shadow-xl relative overflow-hidden group">
                 <div class="absolute top-0 right-0 w-32 h-32 bg-brand-500/10 rounded-full blur-2xl pointer-events-none"></div>
                 
-                <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
                     <span class="text-xs font-semibold text-brand-400 uppercase tracking-wider flex items-center gap-1.5">
-                        <i class="fa-solid fa-square-root-variable"></i> Rendered Piecewise Notation
+                        <i class="fa-solid fa-square-root-variable"></i> Rendered Notation
                     </span>
-                    <span class="text-[11px] text-slate-400">Live Preview</span>
+                    
+                    <div class="flex items-center space-x-2">
+                        <!-- Color theme picker for transparent image export -->
+                        <select id="imgTextColor" class="glass-input text-[11px] rounded-lg px-2.5 py-1 text-slate-300 bg-slate-900 border-slate-700 cursor-pointer" title="Text color when copying transparent PNG image for worksheets">
+                            <option value="#000000">Dark Text (For Worksheets)</option>
+                            <option value="#ffffff" selected>Light Text (For Dark Theme)</option>
+                            <option value="current">Current Theme</option>
+                        </select>
+
+                        <!-- Copy Math Image Button -->
+                        <button onclick="copyImageToClipboard()" class="px-3 py-1 rounded-lg bg-brand-600 hover:bg-brand-500 text-white text-xs font-medium transition flex items-center gap-1.5 shadow-md active:scale-95">
+                            <i class="fa-regular fa-image"></i>
+                            <span>Copy Math Image</span>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-4 sm:p-6 min-h-[100px] flex items-center justify-center shadow-inner overflow-x-auto">
@@ -193,28 +210,115 @@
                 </div>
             </div>
 
-            <!-- 2. Interactive Function Plotter & Live Evaluator -->
-            <div class="glass-panel rounded-2xl p-5 shadow-xl space-y-4">
-                <div class="flex flex-wrap items-center justify-between gap-2">
+            <!-- 2. Interactive Function Plotter & Worksheet Graph Studio -->
+        <div class="glass-panel rounded-2xl p-5 shadow-xl space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                <div class="flex items-center space-x-2">
                     <h2 class="text-sm font-semibold text-slate-200 uppercase tracking-wider flex items-center gap-2">
-                        <i class="fa-solid fa-chart-line text-brand-400"></i> Visual Graph & Evaluator
+                        <i class="fa-solid fa-chart-line text-brand-400"></i> Interactive Graph Studio
                     </h2>
+                </div>
 
-                    <!-- Graph view range controls -->
-                    <div class="flex items-center space-x-2 text-xs">
-                        <span class="text-slate-400">Domain:</span>
-                        <input type="number" id="graphXMin" value="-10" step="1" onchange="drawGraph()" class="w-14 glass-input text-center rounded px-1.5 py-0.5 text-xs text-slate-200">
-                        <span class="text-slate-500">to</span>
-                        <input type="number" id="graphXMax" value="10" step="1" onchange="drawGraph()" class="w-14 glass-input text-center rounded px-1.5 py-0.5 text-xs text-slate-200">
-                        <button onclick="resetGraphZoom()" title="Reset Zoom" class="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition">
-                            <i class="fa-solid fa-expand"></i>
+                <!-- Unified Graph Visual Style Selection -->
+                <div class="flex items-center space-x-2">
+                    <label for="graphStyleSelect" class="text-xs text-slate-400 font-medium">Graph Style:</label>
+                    <select id="graphStyleSelect" onchange="drawGraph()" class="glass-input text-xs rounded-xl px-3 py-1.5 text-slate-200 bg-slate-900 border-slate-700 cursor-pointer focus:ring-1 focus:ring-brand-500">
+                        <option value="dark" selected>Dark Glass (Neon)</option>
+                        <option value="worksheet">Worksheet (Clean White Print)</option>
+                        <option value="gridpaper">Blue Grid Paper</option>
+                        <option value="transparent-dark">Transparent (Dark Grid)</option>
+                        <option value="transparent-light">Transparent (Light Grid)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Export & Range Toolstrip -->
+            <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-900/60 p-3 rounded-xl border border-slate-800/80 text-xs">
+                
+                <!-- Bounds & Interval Step Controls -->
+                <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+                    <div class="flex items-center space-x-1">
+                        <span class="text-slate-400 font-mono text-[11px] font-semibold">X:</span>
+                        <input type="number" id="graphXMin" value="-10" step="any" onchange="drawGraph()" class="w-13 glass-input text-center rounded px-1.5 py-0.5 text-xs text-slate-200" title="X Minimum">
+                        <span class="text-slate-500 text-[11px]">to</span>
+                        <input type="number" id="graphXMax" value="10" step="any" onchange="drawGraph()" class="w-13 glass-input text-center rounded px-1.5 py-0.5 text-xs text-slate-200" title="X Maximum">
+                        <span class="text-slate-500 text-[10px] ml-0.5">step:</span>
+                        <input type="number" id="graphXStep" value="1" min="0.01" step="any" placeholder="Auto" onchange="drawGraph()" class="w-12 glass-input text-center rounded px-1 py-0.5 text-xs text-slate-200" title="X-axis tick interval / step size">
+                    </div>
+
+                    <div class="flex items-center space-x-1">
+                        <span class="text-slate-400 font-mono text-[11px] font-semibold">Y:</span>
+                        <input type="number" id="graphYMin" value="-5" step="any" onchange="manualYChange()" class="w-13 glass-input text-center rounded px-1.5 py-0.5 text-xs text-slate-200" title="Y Minimum">
+                        <span class="text-slate-500 text-[11px]">to</span>
+                        <input type="number" id="graphYMax" value="5" step="any" onchange="manualYChange()" class="w-13 glass-input text-center rounded px-1.5 py-0.5 text-xs text-slate-200" title="Y Maximum">
+                        <span class="text-slate-500 text-[10px] ml-0.5">step:</span>
+                        <input type="number" id="graphYStep" value="1" min="0.01" step="any" placeholder="Auto" onchange="drawGraph()" class="w-12 glass-input text-center rounded px-1 py-0.5 text-xs text-slate-200" title="Y-axis tick interval / step size">
+                    </div>
+
+                    <div class="flex items-center space-x-2.5 border-l border-slate-800 pl-2">
+                        <label class="flex items-center space-x-1 cursor-pointer text-slate-400 hover:text-slate-200 text-[11px] select-none" title="Auto-scale Y bounds to fit active function values">
+                            <input type="checkbox" id="autoYToggle" checked onchange="drawGraph()" class="rounded bg-slate-800 border-slate-700 text-brand-600 focus:ring-brand-500">
+                            <span>Auto Y</span>
+                        </label>
+
+                        <label class="flex items-center space-x-1 cursor-pointer text-slate-400 hover:text-slate-200 text-[11px] select-none" title="Force 1:1 scale so 1 unit X equals 1 unit Y visually">
+                            <input type="checkbox" id="squareAspectToggle" onchange="drawGraph()" class="rounded bg-slate-800 border-slate-700 text-brand-600 focus:ring-brand-500">
+                            <span>1:1 Scale</span>
+                        </label>
+                    </div>
+
+                    <!-- Zoom & Reset Action Group -->
+                    <div class="flex items-center space-x-1 border-l border-slate-800 pl-2">
+                        <button onclick="zoomInGraph()" title="Zoom In (+)" class="p-1 px-2 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-bold transition active:scale-95">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                        <button onclick="zoomOutGraph()" title="Zoom Out (-)" class="p-1 px-2 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-bold transition active:scale-95">
+                            <i class="fa-solid fa-minus"></i>
+                        </button>
+                        <button onclick="resetGraphZoom()" title="Reset Graph Bounds" class="p-1 px-2 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] transition active:scale-95">
+                            <i class="fa-solid fa-rotate-left"></i> Reset
                         </button>
                     </div>
                 </div>
 
-                <!-- Canvas Graph Container -->
-                <div class="relative w-full h-[260px] bg-slate-950 rounded-xl border border-slate-800 overflow-hidden shadow-inner">
-                    <canvas id="graphCanvas" class="w-full h-full cursor-crosshair"></canvas>
+                <!-- Graph Image Copy Controls -->
+                <div class="flex items-center space-x-2">
+                    <button onclick="copyGraphToClipboard()" title="Copy Graph Image to Clipboard" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium transition flex items-center gap-1.5 shadow active:scale-95">
+                        <i class="fa-regular fa-copy"></i>
+                        <span>Copy Graph</span>
+                    </button>
+
+                    <button onclick="downloadGraphImage()" title="Download Graph PNG" class="p-1.5 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-xs transition">
+                        <i class="fa-solid fa-download"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Canvas Graph Container -->
+            <div id="canvasWrapper" class="relative w-full h-[280px] rounded-xl border border-slate-800 overflow-hidden shadow-inner transition-colors duration-200 bg-slate-950">
+                    <canvas id="graphCanvas" class="w-full h-full cursor-grab active:cursor-grabbing"></canvas>
+
+                    <!-- Interactive Guide Badge -->
+                    <div class="absolute bottom-2 left-2 flex items-center space-x-1 bg-slate-900/80 backdrop-blur border border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-400 select-none opacity-75 hover:opacity-100 transition-opacity pointer-events-none">
+                        <i class="fa-solid fa-hand text-brand-400"></i>
+                        <span>Drag to Pan</span>
+                        <span class="mx-1">•</span>
+                        <i class="fa-solid fa-magnifying-glass text-brand-400"></i>
+                        <span>Scroll / Pinch to Zoom</span>
+                    </div>
+
+                    <!-- Floating Quick Zoom Buttons -->
+                    <div class="absolute top-2 right-2 flex flex-col space-y-1 bg-slate-900/85 backdrop-blur border border-slate-800 p-1 rounded-lg shadow-lg">
+                        <button onclick="zoomInGraph()" title="Zoom In" class="w-6 h-6 flex items-center justify-center rounded hover:bg-slate-800 text-slate-200 hover:text-brand-300 text-xs transition active:scale-95">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                        <button onclick="zoomOutGraph()" title="Zoom Out" class="w-6 h-6 flex items-center justify-center rounded hover:bg-slate-800 text-slate-200 hover:text-brand-300 text-xs transition active:scale-95">
+                            <i class="fa-solid fa-minus"></i>
+                        </button>
+                        <button onclick="resetGraphZoom()" title="Reset View" class="w-6 h-6 flex items-center justify-center rounded hover:bg-slate-800 text-slate-200 hover:text-amber-400 text-xs transition active:scale-95">
+                            <i class="fa-solid fa-compress"></i>
+                        </button>
+                    </div>
 
                     <!-- Hover Coordinates Overlay -->
                     <div id="graphTooltip" class="absolute hidden pointer-events-none bg-slate-900/90 text-slate-200 border border-slate-700 text-[11px] px-2.5 py-1 rounded-md shadow-lg backdrop-blur">
@@ -259,7 +363,7 @@
                         </button>
                     </div>
 
-                    <!-- Copy Button -->
+                    <!-- Copy Code Button -->
                     <button onclick="copyCurrentCode()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-medium transition flex items-center gap-1.5 active:scale-95">
                         <i class="fa-regular fa-copy"></i>
                         <span id="copyBtnText">Copy Code</span>
@@ -296,6 +400,17 @@
             '#06b6d4', // Cyan
             '#a855f7', // Purple
             '#f97316'  // Orange
+        ];
+
+        // High contrast colors for print/worksheet mode
+        const WORKSHEET_COLORS = [
+            '#1e1b4b', // Dark Indigo
+            '#065f46', // Dark Emerald
+            '#9a3412', // Dark Amber/Orange
+            '#831843', // Dark Pink/Magenta
+            '#164e63', // Dark Cyan
+            '#581c87', // Dark Purple
+            '#7c2d12'  // Rust
         ];
 
         // Built-in Presets
@@ -358,7 +473,7 @@
         function initApp() {
             loadPreset('discontinuous');
             setupGraphInteractions();
-            window.addEventListener('resize', drawGraph);
+            window.addEventListener('resize', () => drawGraph());
         }
 
         if (document.readyState === 'complete' || document.readyState === 'interactive') {
@@ -482,16 +597,18 @@
                 return `
                     <input type="text" value="${escapeHtml(piece.condExpr || '')}" 
                         oninput="updatePieceCondExpr('${piece.id}', this.value)"
-                        placeholder="e.g. ${v} < 0 or ${v} = 2" 
-                        class="w-full glass-input rounded-lg px-2.5 py-1 text-xs font-mono text-emerald-300">
+                        placeholder="e.g. ${v} < 0 or ${v} \\neq 0 or ${v} \\in \\mathbb{R}" 
+                        class="w-full glass-input rounded-lg px-2.5 py-1 text-xs font-mono text-emerald-300"
+                        title="Accepts raw LaTeX commands like \\pi, \\le, \\ge, \\neq, \\infty">
                 `;
             }
 
             return `
                 <div class="flex items-center space-x-1 text-xs font-mono">
-                    <input type="text" value="${escapeHtml(piece.minVal)}" placeholder="-&infin;"
+                    <input type="text" value="${escapeHtml(piece.minVal)}" placeholder="-\\infty"
                         oninput="updatePieceBound('${piece.id}', 'minVal', this.value)"
-                        class="w-14 glass-input rounded text-center py-1 text-xs text-slate-200">
+                        class="w-16 glass-input rounded text-center py-1 text-xs text-slate-200"
+                        title="Accepts numbers or LaTeX like -\\pi, -\\infty">
                     
                     <button onclick="togglePieceInc('${piece.id}', 'minInc')" 
                         class="px-1.5 py-1 rounded bg-slate-800 border border-slate-700 text-brand-300 hover:bg-slate-700 font-bold">
@@ -505,9 +622,10 @@
                         ${piece.maxInc ? '&le;' : '&lt;'}
                     </button>
 
-                    <input type="text" value="${escapeHtml(piece.maxVal)}" placeholder="&infin;"
+                    <input type="text" value="${escapeHtml(piece.maxVal)}" placeholder="\\infty"
                         oninput="updatePieceBound('${piece.id}', 'maxVal', this.value)"
-                        class="w-14 glass-input rounded text-center py-1 text-xs text-slate-200">
+                        class="w-16 glass-input rounded text-center py-1 text-xs text-slate-200"
+                        title="Accepts numbers or LaTeX like \\pi, \\infty">
                 </div>
             `;
         }
@@ -588,12 +706,20 @@
             }
             if (piece.mode === 'raw') {
                 let cond = piece.condExpr || '';
-                cond = cond.replace(/<=/g, '\\le ').replace(/>=/g, '\\ge ').replace(/!=/g, '\\neq ');
+                if (!cond.includes('\\')) {
+                    cond = cond.replace(/<=/g, '\\le ')
+                               .replace(/>=/g, '\\ge ')
+                               .replace(/!=/g, '\\neq ');
+                }
                 return cond;
             }
             
-            const min = piece.minVal.trim();
-            const max = piece.maxVal.trim();
+            let min = piece.minVal.trim();
+            let max = piece.maxVal.trim();
+
+            min = min.replace(/<=/g, '\\le ').replace(/>=/g, '\\ge ').replace(/!=/g, '\\neq ');
+            max = max.replace(/<=/g, '\\le ').replace(/>=/g, '\\ge ').replace(/!=/g, '\\neq ');
+
             const minOp = piece.minInc ? '\\le' : '<';
             const maxOp = piece.maxInc ? '\\le' : '<';
 
@@ -606,6 +732,40 @@
                 return `${vr} ${maxOp} ${max}`;
             } else {
                 return '\\text{all } ' + vr;
+            }
+        }
+
+        function sanitizeLatexForMathJS(str) {
+            if (!str) return '';
+            return str
+                .replace(/\\pi/g, 'pi')
+                .replace(/\\infty/g, 'Infinity')
+                .replace(/\\le(q)?/g, '<=')
+                .replace(/\\ge(q)?/g, '>=')
+                .replace(/\\neq/g, '!=')
+                .replace(/\\cdot/g, '*')
+                .replace(/\\times/g, '*')
+                .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
+                .replace(/\\left|\\right/g, '')
+                .replace(/\\/g, '');
+        }
+
+        function calculateEval() {
+            const input = document.getElementById('evalInput');
+            const resultEl = document.getElementById('evalResult');
+            if (!input || !resultEl) return;
+            
+            const xVal = parseFloat(input.value);
+            if (isNaN(xVal)) {
+                resultEl.textContent = '--';
+                return;
+            }
+            
+            const res = evaluatePiecewise(xVal);
+            if (!isNaN(res.val) && isFinite(res.val)) {
+                resultEl.textContent = Number.isInteger(res.val) ? res.val.toString() : parseFloat(res.val.toFixed(4)).toString();
+            } else {
+                resultEl.textContent = 'Undefined';
             }
         }
 
@@ -779,7 +939,8 @@
             if (piece.mode === 'raw') {
                 if (!piece.condExpr) return true;
                 try {
-                    let exprStr = piece.condExpr
+                    let sanitizedCond = sanitizeLatexForMathJS(piece.condExpr);
+                    let exprStr = sanitizedCond
                         .replace(/<=/g, ' <= ')
                         .replace(/>=/g, ' >= ')
                         .replace(/!=/g, ' != ')
@@ -794,8 +955,23 @@
                 }
             }
 
-            const min = piece.minVal.trim() !== '' ? parseFloat(piece.minVal) : -Infinity;
-            const max = piece.maxVal.trim() !== '' ? parseFloat(piece.maxVal) : Infinity;
+            let minStr = sanitizeLatexForMathJS(piece.minVal.trim());
+            let maxStr = sanitizeLatexForMathJS(piece.maxVal.trim());
+
+            let min = -Infinity;
+            let max = Infinity;
+
+            try {
+                if (minStr !== '') min = parseFloat(math.evaluate(minStr));
+            } catch (e) {
+                min = minStr !== '' ? parseFloat(minStr) : -Infinity;
+            }
+
+            try {
+                if (maxStr !== '') max = parseFloat(math.evaluate(maxStr));
+            } catch (e) {
+                max = maxStr !== '' ? parseFloat(maxStr) : Infinity;
+            }
 
             const minSat = piece.minInc ? (xVal >= min) : (xVal > min);
             const maxSat = piece.maxInc ? (xVal <= max) : (xVal < max);
@@ -803,39 +979,182 @@
             return minSat && maxSat;
         }
 
-        function calculateEval() {
-            const xInput = parseFloat(document.getElementById('evalInput').value);
-            const resElem = document.getElementById('evalResult');
+        async function copyImageToClipboard() {
+            const katexEl = document.getElementById('katexOutput');
+            if (!katexEl) return;
 
-            if (isNaN(xInput)) {
-                resElem.textContent = 'Invalid x';
-                return;
+            const selectedColorOption = document.getElementById('imgTextColor').value;
+            let targetColor = '#ffffff';
+            if (selectedColorOption === '#000000') {
+                targetColor = '#000000';
+            } else if (selectedColorOption === 'current') {
+                targetColor = window.getComputedStyle(katexEl).color || '#ffffff';
             }
 
-            const res = evaluatePiecewise(xInput);
-            if (isNaN(res.val) || res.val === null || res.val === undefined) {
-                resElem.textContent = 'Undefined';
-                resElem.style.color = '#94a3b8';
+            const wrapper = document.createElement('div');
+            wrapper.style.position = 'absolute';
+            wrapper.style.left = '-9999px';
+            wrapper.style.top = '-9999px';
+            wrapper.style.padding = '24px 32px';
+            wrapper.style.background = 'transparent';
+            wrapper.style.color = targetColor;
+            wrapper.style.display = 'inline-block';
+            
+            wrapper.innerHTML = katexEl.innerHTML;
+            document.body.appendChild(wrapper);
+
+            const allElements = wrapper.querySelectorAll('*');
+            allElements.forEach(el => {
+                el.style.color = targetColor;
+                el.style.borderColor = targetColor;
+            });
+
+            try {
+                if (typeof htmlToImage === 'undefined') {
+                    throw new Error('html-to-image library not loaded');
+                }
+
+                const blob = await htmlToImage.toBlob(wrapper, {
+                    backgroundColor: null,
+                    pixelRatio: 3,
+                    cacheBust: true
+                });
+
+                document.body.removeChild(wrapper);
+
+                if (blob && navigator.clipboard && window.ClipboardItem) {
+                    await navigator.clipboard.write([
+                        new ClipboardItem({ 'image/png': blob })
+                    ]);
+                    showToast('Transparent Math PNG copied to clipboard!');
+                } else if (blob) {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'piecewise-function.png';
+                    a.click();
+                    showToast('Math image downloaded as PNG file!');
+                }
+            } catch (err) {
+                if (document.body.contains(wrapper)) document.body.removeChild(wrapper);
+                console.error('Copy image failed:', err);
+                showToast('Unable to copy image directly. Try right-clicking preview.');
+            }
+        }
+
+        function setGraphTheme(theme) {
+            currentGraphTheme = theme;
+            const darkBtn = document.getElementById('themeBtnDark');
+            const wsBtn = document.getElementById('themeBtnWorksheet');
+            const wrapper = document.getElementById('canvasWrapper');
+
+            if (theme === 'worksheet') {
+                wsBtn.className = 'px-2.5 py-1 rounded-lg font-medium transition flex items-center gap-1.5 text-slate-900 bg-white shadow-sm';
+                darkBtn.className = 'px-2.5 py-1 rounded-lg font-medium transition flex items-center gap-1.5 text-slate-400 hover:text-slate-200';
+                wrapper.className = 'relative w-full h-[280px] rounded-xl border border-slate-300 overflow-hidden shadow-inner transition-colors duration-200 bg-white';
             } else {
-                let rounded = Math.abs(res.val) < 1e-6 ? 0 : Math.round(res.val * 10000) / 10000;
-                resElem.textContent = rounded;
-                resElem.style.color = res.color || '#6366f1';
+                darkBtn.className = 'px-2.5 py-1 rounded-lg font-medium transition flex items-center gap-1.5 text-brand-300 bg-slate-800 shadow-sm';
+                wsBtn.className = 'px-2.5 py-1 rounded-lg font-medium transition flex items-center gap-1.5 text-slate-400 hover:text-slate-200';
+                wrapper.className = 'relative w-full h-[280px] rounded-xl border border-slate-800 overflow-hidden shadow-inner transition-colors duration-200 bg-slate-950';
             }
+
+            drawGraph();
         }
 
         function resetGraphZoom() {
             document.getElementById('graphXMin').value = -10;
             document.getElementById('graphXMax').value = 10;
+            document.getElementById('graphXStep').value = 1;
+            document.getElementById('graphYMin').value = -5;
+            document.getElementById('graphYMax').value = 5;
+            document.getElementById('graphYStep').value = 1;
+            document.getElementById('autoYToggle').checked = true;
+            document.getElementById('squareAspectToggle').checked = false;
             drawGraph();
         }
 
-        function drawGraph() {
-            const canvas = document.getElementById('graphCanvas');
+        function zoomInGraph() {
+            zoomAtCenter(0.8);
+        }
+
+        function zoomOutGraph() {
+            zoomAtCenter(1.25);
+        }
+
+        function zoomAtCenter(factor) {
+            let xMin = parseFloat(document.getElementById('graphXMin').value) || -10;
+            let xMax = parseFloat(document.getElementById('graphXMax').value) || 10;
+            let yMin = parseFloat(document.getElementById('graphYMin').value) || -5;
+            let yMax = parseFloat(document.getElementById('graphYMax').value) || 5;
+
+            let cx = (xMin + xMax) / 2;
+            let cy = (yMin + yMax) / 2;
+
+            applyZoom(cx, cy, 0.5, 0.5, factor);
+        }
+
+        function applyZoom(cx, cy, rx, ry, factor) {
+            let xMin = parseFloat(document.getElementById('graphXMin').value) || -10;
+            let xMax = parseFloat(document.getElementById('graphXMax').value) || 10;
+            let yMin = parseFloat(document.getElementById('graphYMin').value) || -5;
+            let yMax = parseFloat(document.getElementById('graphYMax').value) || 5;
+
+            let xRange = (xMax - xMin) * factor;
+            let yRange = (yMax - yMin) * factor;
+
+            // Safety limit guards on extreme zoom
+            if (xRange < 0.1 || yRange < 0.1) return;
+            if (xRange > 1000 || yRange > 1000) return;
+
+            let newXMin = cx - rx * xRange;
+            let newXMax = cx + (1 - rx) * xRange;
+            let newYMin = cy - ry * yRange;
+            let newYMax = cy + (1 - ry) * yRange;
+
+            document.getElementById('graphXMin').value = parseFloat(newXMin.toFixed(2));
+            document.getElementById('graphXMax').value = parseFloat(newXMax.toFixed(2));
+            document.getElementById('graphYMin').value = parseFloat(newYMin.toFixed(2));
+            document.getElementById('graphYMax').value = parseFloat(newYMax.toFixed(2));
+
+            // Disable auto Y so explicit zoom viewport is preserved
+            document.getElementById('autoYToggle').checked = false;
+
+            drawGraph();
+        }
+
+        function manualYChange() {
+            document.getElementById('autoYToggle').checked = false;
+            drawGraph();
+        }
+
+        function drawGraph(targetCanvas = null) {
+            const isCustomCanvas = targetCanvas instanceof HTMLCanvasElement;
+            const canvas = isCustomCanvas ? targetCanvas : document.getElementById('graphCanvas');
             if (!canvas) return;
 
-            const rect = canvas.getBoundingClientRect();
-            canvas.width = rect.width * (window.devicePixelRatio || 1);
-            canvas.height = rect.height * (window.devicePixelRatio || 1);
+            const selectedStyle = document.getElementById('graphStyleSelect')?.value || 'dark';
+
+            // Update wrapper background according to style
+            const wrapper = document.getElementById('canvasWrapper');
+            if (wrapper && !isCustomCanvas) {
+                if (selectedStyle === 'worksheet' || selectedStyle === 'gridpaper') {
+                    wrapper.className = 'relative w-full h-[280px] rounded-xl border border-slate-300 overflow-hidden shadow-inner transition-colors duration-200 bg-white';
+                } else {
+                    wrapper.className = 'relative w-full h-[280px] rounded-xl border border-slate-800 overflow-hidden shadow-inner transition-colors duration-200 bg-slate-950';
+                }
+            }
+
+            const isExportMode = isCustomCanvas;
+            const rect = (canvas.getBoundingClientRect && typeof canvas.getBoundingClientRect === 'function')
+                ? canvas.getBoundingClientRect() 
+                : { width: 900, height: 500 };
+
+            const dpr = isExportMode ? 3 : (window.devicePixelRatio || 1);
+            const displayWidth = rect.width || canvas.clientWidth || 600;
+            const displayHeight = rect.height || canvas.clientHeight || 280;
+
+            canvas.width = (isExportMode ? 900 : displayWidth) * dpr;
+            canvas.height = (isExportMode ? 500 : displayHeight) * dpr;
 
             const ctx = canvas.getContext('2d');
             const width = canvas.width;
@@ -843,45 +1162,115 @@
 
             ctx.clearRect(0, 0, width, height);
 
+            // Theme Color Config
+            let bgFill = null;
+            let gridColor = 'rgba(255, 255, 255, 0.1)';
+            let axisColor = '#94a3b8';
+            let textColor = '#cbd5e1';
+            let colorPalette = PIECE_COLORS;
+
+            if (selectedStyle === 'dark') {
+                bgFill = '#020617';
+            } else if (selectedStyle === 'worksheet') {
+                bgFill = '#ffffff';
+                gridColor = 'rgba(0, 0, 0, 0.12)';
+                axisColor = '#0f172a';
+                textColor = '#0f172a';
+                colorPalette = WORKSHEET_COLORS;
+            } else if (selectedStyle === 'gridpaper') {
+                bgFill = '#f8fafc';
+                gridColor = 'rgba(59, 130, 246, 0.22)'; // Light blue blueprint grid
+                axisColor = '#1e3a8a';
+                textColor = '#1e3a8a';
+                colorPalette = WORKSHEET_COLORS;
+            } else if (selectedStyle === 'transparent-dark') {
+                gridColor = 'rgba(0, 0, 0, 0.15)';
+                axisColor = '#0f172a';
+                textColor = '#0f172a';
+                colorPalette = WORKSHEET_COLORS;
+            } else if (selectedStyle === 'transparent-light') {
+                gridColor = 'rgba(255, 255, 255, 0.15)';
+                axisColor = '#e2e8f0';
+                textColor = '#f1f5f9';
+                colorPalette = PIECE_COLORS;
+            }
+
+            if (bgFill) {
+                ctx.fillStyle = bgFill;
+                ctx.fillRect(0, 0, width, height);
+            }
+
             let xMin = parseFloat(document.getElementById('graphXMin').value) || -10;
             let xMax = parseFloat(document.getElementById('graphXMax').value) || 10;
             if (xMin >= xMax) xMax = xMin + 1;
 
-            let yMin = -5;
-            let yMax = 5;
-            let sampledY = [];
+            let autoY = document.getElementById('autoYToggle').checked;
+            let squareAspect = document.getElementById('squareAspectToggle').checked;
 
-            const samples = 300;
-            const dx = (xMax - xMin) / samples;
+            let yMin = parseFloat(document.getElementById('graphYMin').value) || -5;
+            let yMax = parseFloat(document.getElementById('graphYMax').value) || 5;
 
-            for (let i = 0; i <= samples; i++) {
-                let x = xMin + i * dx;
-                let res = evaluatePiecewise(x);
-                if (!isNaN(res.val) && isFinite(res.val)) {
-                    sampledY.push(res.val);
+            if (autoY) {
+                let sampledY = [];
+                const samples = 300;
+                const dx = (xMax - xMin) / samples;
+
+                for (let i = 0; i <= samples; i++) {
+                    let x = xMin + i * dx;
+                    let res = evaluatePiecewise(x);
+                    if (!isNaN(res.val) && isFinite(res.val)) {
+                        sampledY.push(res.val);
+                    }
+                }
+
+                if (sampledY.length > 0) {
+                    let minY = Math.min(...sampledY);
+                    let maxY = Math.max(...sampledY);
+                    if (minY !== maxY) {
+                        let padding = Math.max((maxY - minY) * 0.2, 2);
+                        yMin = Math.floor(minY - padding);
+                        yMax = Math.ceil(maxY + padding);
+                    } else {
+                        yMin = minY - 5;
+                        yMax = maxY + 5;
+                    }
                 }
             }
 
-            if (sampledY.length > 0) {
-                let minY = Math.min(...sampledY);
-                let maxY = Math.max(...sampledY);
-                if (minY !== maxY) {
-                    let padding = (maxY - minY) * 0.2 || 2;
-                    yMin = Math.floor(minY - padding);
-                    yMax = Math.ceil(maxY + padding);
-                }
+            // 1:1 Aspect Ratio Scaling
+            if (squareAspect) {
+                let yCenter = (yMin + yMax) / 2;
+                let requiredYSpan = (xMax - xMin) * (height / width);
+                yMin = parseFloat((yCenter - requiredYSpan / 2).toFixed(2));
+                yMax = parseFloat((yCenter + requiredYSpan / 2).toFixed(2));
             }
+
+            document.getElementById('graphYMin').value = yMin;
+            document.getElementById('graphYMax').value = yMax;
+
+            if (yMin >= yMax) yMax = yMin + 1;
 
             const toScreenX = (x) => ((x - xMin) / (xMax - xMin)) * width;
             const toScreenY = (y) => height - ((y - yMin) / (yMax - yMin)) * height;
 
-            // Grid Lines & Axes
-            ctx.strokeStyle = '#1e293b';
-            ctx.lineWidth = 1 * (window.devicePixelRatio || 1);
-            ctx.fillStyle = '#64748b';
-            ctx.font = `${10 * (window.devicePixelRatio || 1)}px Fira Code`;
+            // Step Intervals
+            let customXStep = parseFloat(document.getElementById('graphXStep').value);
+            let customYStep = parseFloat(document.getElementById('graphYStep').value);
 
-            const xStep = Math.max(1, Math.round((xMax - xMin) / 10));
+            const xStep = (!isNaN(customXStep) && customXStep > 0) 
+                ? customXStep 
+                : Math.max(0.5, Math.round((xMax - xMin) / 10));
+
+            const yStep = (!isNaN(customYStep) && customYStep > 0) 
+                ? customYStep 
+                : Math.max(0.5, Math.round((yMax - yMin) / 8));
+
+            // Render Grid Lines
+            ctx.strokeStyle = gridColor;
+            ctx.lineWidth = 1 * dpr;
+            ctx.fillStyle = textColor;
+            ctx.font = `${11 * dpr}px Fira Code, monospace`;
+
             for (let x = Math.ceil(xMin / xStep) * xStep; x <= xMax; x += xStep) {
                 let sx = toScreenX(x);
                 ctx.beginPath();
@@ -889,13 +1278,13 @@
                 ctx.lineTo(sx, height);
                 ctx.stroke();
 
-                if (x !== 0) {
-                    let sy = Math.max(15, Math.min(height - 5, toScreenY(0) + 12 * (window.devicePixelRatio || 1)));
-                    ctx.fillText(x.toString(), sx - 6, sy);
+                if (Math.abs(x) > 0.0001) {
+                    let sy = Math.max(20 * dpr, Math.min(height - 10 * dpr, toScreenY(0) + 14 * dpr));
+                    let label = Number.isInteger(x) ? x.toString() : parseFloat(x.toFixed(2)).toString();
+                    ctx.fillText(label, sx - 8 * dpr, sy);
                 }
             }
 
-            const yStep = Math.max(1, Math.round((yMax - yMin) / 8));
             for (let y = Math.ceil(yMin / yStep) * yStep; y <= yMax; y += yStep) {
                 let sy = toScreenY(y);
                 ctx.beginPath();
@@ -903,15 +1292,16 @@
                 ctx.lineTo(width, sy);
                 ctx.stroke();
 
-                if (y !== 0) {
-                    let sx = Math.max(5, Math.min(width - 25, toScreenX(0) + 5));
-                    ctx.fillText(y.toString(), sx, sy + 3);
+                if (Math.abs(y) > 0.0001) {
+                    let sx = Math.max(8 * dpr, Math.min(width - 30 * dpr, toScreenX(0) + 6 * dpr));
+                    let label = Number.isInteger(y) ? y.toString() : parseFloat(y.toFixed(2)).toString();
+                    ctx.fillText(label, sx, sy + 4 * dpr);
                 }
             }
 
             // Main Axis Lines
-            ctx.strokeStyle = '#475569';
-            ctx.lineWidth = 2 * (window.devicePixelRatio || 1);
+            ctx.strokeStyle = axisColor;
+            ctx.lineWidth = 2 * dpr;
 
             let zeroY = toScreenY(0);
             ctx.beginPath();
@@ -925,11 +1315,18 @@
             ctx.lineTo(zeroX, height);
             ctx.stroke();
 
-            // Plot Piece Curves
+            // Label 'x' and 'y'
+            ctx.font = `bold ${12 * dpr}px Fira Code`;
+            ctx.fillText(getVar(), width - 18 * dpr, Math.max(20 * dpr, zeroY - 8 * dpr));
+            ctx.fillText(getFuncName() + '(' + getVar() + ')', Math.max(10 * dpr, zeroX + 8 * dpr), 20 * dpr);
+
+            // Plot Sub-Function Curves
+            const isLightBg = selectedStyle === 'worksheet' || selectedStyle === 'gridpaper';
+
             pieces.forEach((piece, pIdx) => {
-                const color = PIECE_COLORS[pIdx % PIECE_COLORS.length];
+                const color = colorPalette[pIdx % colorPalette.length];
                 ctx.strokeStyle = color;
-                ctx.lineWidth = 2.5 * (window.devicePixelRatio || 1);
+                ctx.lineWidth = 3 * dpr;
 
                 ctx.beginPath();
                 let drawing = false;
@@ -969,21 +1366,22 @@
                 }
                 ctx.stroke();
 
+                // Plot Endpoint Dots for Bounded Intervals
                 if (piece.mode === 'bounded') {
                     let min = parseFloat(piece.minVal);
                     let max = parseFloat(piece.maxVal);
 
                     if (!isNaN(min) && min >= xMin && min <= xMax) {
-                        drawEndpointDot(ctx, min, piece.expr, piece.minInc, color, toScreenX, toScreenY);
+                        drawEndpointDot(ctx, min, piece.expr, piece.minInc, color, toScreenX, toScreenY, dpr, isLightBg);
                     }
                     if (!isNaN(max) && max >= xMin && max <= xMax) {
-                        drawEndpointDot(ctx, max, piece.expr, piece.maxInc, color, toScreenX, toScreenY);
+                        drawEndpointDot(ctx, max, piece.expr, piece.maxInc, color, toScreenX, toScreenY, dpr, isLightBg);
                     }
                 }
             });
         }
 
-        function drawEndpointDot(ctx, xVal, expr, isInclusive, color, toScreenX, toScreenY) {
+        function drawEndpointDot(ctx, xVal, expr, isInclusive, color, toScreenX, toScreenY, dpr, isLightBg) {
             try {
                 let vr = getVar();
                 let scope = {};
@@ -994,7 +1392,7 @@
 
                 let sx = toScreenX(xVal);
                 let sy = toScreenY(yVal);
-                let radius = 4.5 * (window.devicePixelRatio || 1);
+                let radius = 5 * dpr;
 
                 ctx.beginPath();
                 ctx.arc(sx, sy, radius, 0, 2 * Math.PI);
@@ -1002,23 +1400,67 @@
                 if (isInclusive) {
                     ctx.fillStyle = color;
                     ctx.fill();
-                    ctx.strokeStyle = '#0f172a';
-                    ctx.lineWidth = 1.5 * (window.devicePixelRatio || 1);
+                    ctx.strokeStyle = isLightBg ? '#ffffff' : '#020617';
+                    ctx.lineWidth = 1.5 * dpr;
                     ctx.stroke();
                 } else {
-                    ctx.fillStyle = '#0f172a';
+                    ctx.fillStyle = isLightBg ? '#ffffff' : '#020617';
                     ctx.fill();
                     ctx.strokeStyle = color;
-                    ctx.lineWidth = 2 * (window.devicePixelRatio || 1);
+                    ctx.lineWidth = 2.5 * dpr;
                     ctx.stroke();
                 }
             } catch (e) {}
+        }
+
+        async function copyGraphToClipboard() {
+            const offscreenCanvas = document.createElement('canvas');
+            drawGraph(offscreenCanvas);
+
+            offscreenCanvas.toBlob(async (blob) => {
+                if (!blob) {
+                    showToast("Failed to generate graph image");
+                    return;
+                }
+
+                try {
+                    if (navigator.clipboard && window.ClipboardItem) {
+                        await navigator.clipboard.write([
+                            new ClipboardItem({ 'image/png': blob })
+                        ]);
+                        showToast("Graph image copied to clipboard!");
+                    } else {
+                        downloadGraphImage();
+                    }
+                } catch (err) {
+                    console.error("Clipboard export error:", err);
+                    downloadGraphImage();
+                }
+            }, 'image/png');
+        }
+
+        function downloadGraphImage() {
+            const offscreenCanvas = document.createElement('canvas');
+            drawGraph(offscreenCanvas);
+
+            const a = document.createElement('a');
+            a.download = `piecewise-graph-${getFuncName()}.png`;
+            a.href = offscreenCanvas.toDataURL('image/png');
+            a.click();
+            showToast("Graph downloaded as PNG!");
         }
 
         function setupGraphInteractions() {
             const canvas = document.getElementById('graphCanvas');
             const tooltip = document.getElementById('graphTooltip');
 
+            let isDragging = false;
+            let startX = 0, startY = 0;
+            let initialXMin = 0, initialXMax = 0, initialYMin = 0, initialYMax = 0;
+            let touchStartDist = 0;
+            let initialPinchZoom = false;
+
+            // 1. Hover Tooltip Coordinates
             canvas.addEventListener('mousemove', (e) => {
                 const rect = canvas.getBoundingClientRect();
                 const mouseX = e.clientX - rect.left;
@@ -1044,6 +1486,125 @@
 
             canvas.addEventListener('mouseleave', () => {
                 tooltip.style.display = 'none';
+            });
+
+            // 2. Mouse Wheel Scroll Zoom (Centered on Cursor)
+            canvas.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+
+                let rx = mouseX / rect.width;
+                let ry = 1.0 - (mouseY / rect.height);
+
+                let xMin = parseFloat(document.getElementById('graphXMin').value) || -10;
+                let xMax = parseFloat(document.getElementById('graphXMax').value) || 10;
+                let yMin = parseFloat(document.getElementById('graphYMin').value) || -5;
+                let yMax = parseFloat(document.getElementById('graphYMax').value) || 5;
+
+                let cx = xMin + rx * (xMax - xMin);
+                let cy = yMin + ry * (yMax - yMin);
+
+                let zoomFactor = e.deltaY < 0 ? 0.85 : 1.18;
+                applyZoom(cx, cy, rx, ry, zoomFactor);
+            }, { passive: false });
+
+            // 3. Click & Drag Panning
+            canvas.addEventListener('mousedown', (e) => {
+                if (e.button !== 0) return; // Left click only
+                isDragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
+
+                initialXMin = parseFloat(document.getElementById('graphXMin').value) || -10;
+                initialXMax = parseFloat(document.getElementById('graphXMax').value) || 10;
+                initialYMin = parseFloat(document.getElementById('graphYMin').value) || -5;
+                initialYMax = parseFloat(document.getElementById('graphYMax').value) || 5;
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+
+                const rect = canvas.getBoundingClientRect();
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+
+                const xSpan = initialXMax - initialXMin;
+                const ySpan = initialYMax - initialYMin;
+
+                const deltaX = (dx / rect.width) * xSpan;
+                const deltaY = (dy / rect.height) * ySpan;
+
+                document.getElementById('graphXMin').value = parseFloat((initialXMin - deltaX).toFixed(2));
+                document.getElementById('graphXMax').value = parseFloat((initialXMax - deltaX).toFixed(2));
+                document.getElementById('graphYMin').value = parseFloat((initialYMin + deltaY).toFixed(2));
+                document.getElementById('graphYMax').value = parseFloat((initialYMax + deltaY).toFixed(2));
+
+                document.getElementById('autoYToggle').checked = false;
+                drawGraph();
+            });
+
+            window.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+
+            // 4. Touch Drag Pan & Pinch Zoom
+            canvas.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1) {
+                    isDragging = true;
+                    startX = e.touches[0].clientX;
+                    startY = e.touches[0].clientY;
+                    initialXMin = parseFloat(document.getElementById('graphXMin').value) || -10;
+                    initialXMax = parseFloat(document.getElementById('graphXMax').value) || 10;
+                    initialYMin = parseFloat(document.getElementById('graphYMin').value) || -5;
+                    initialYMax = parseFloat(document.getElementById('graphYMax').value) || 5;
+                } else if (e.touches.length === 2) {
+                    isDragging = false;
+                    initialPinchZoom = true;
+                    touchStartDist = Math.hypot(
+                        e.touches[0].clientX - e.touches[1].clientX,
+                        e.touches[0].clientY - e.touches[1].clientY
+                    );
+                }
+            }, { passive: true });
+
+            canvas.addEventListener('touchmove', (e) => {
+                if (isDragging && e.touches.length === 1) {
+                    const rect = canvas.getBoundingClientRect();
+                    const dx = e.touches[0].clientX - startX;
+                    const dy = e.touches[0].clientY - startY;
+
+                    const xSpan = initialXMax - initialXMin;
+                    const ySpan = initialYMax - initialYMin;
+
+                    const deltaX = (dx / rect.width) * xSpan;
+                    const deltaY = (dy / rect.height) * ySpan;
+
+                    document.getElementById('graphXMin').value = parseFloat((initialXMin - deltaX).toFixed(2));
+                    document.getElementById('graphXMax').value = parseFloat((initialXMax - deltaX).toFixed(2));
+                    document.getElementById('graphYMin').value = parseFloat((initialYMin + deltaY).toFixed(2));
+                    document.getElementById('graphYMax').value = parseFloat((initialYMax + deltaY).toFixed(2));
+
+                    document.getElementById('autoYToggle').checked = false;
+                    drawGraph();
+                } else if (initialPinchZoom && e.touches.length === 2) {
+                    const currentDist = Math.hypot(
+                        e.touches[0].clientX - e.touches[1].clientX,
+                        e.touches[0].clientY - e.touches[1].clientY
+                    );
+
+                    if (touchStartDist > 0 && Math.abs(currentDist - touchStartDist) > 8) {
+                        const factor = touchStartDist / currentDist;
+                        zoomAtCenter(factor > 1 ? 1.05 : 0.95);
+                        touchStartDist = currentDist;
+                    }
+                }
+            }, { passive: true });
+
+            canvas.addEventListener('touchend', () => {
+                isDragging = false;
+                initialPinchZoom = false;
             });
         }
     </script>
