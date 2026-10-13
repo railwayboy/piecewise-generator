@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Piecewise Function Builder & Generator</title>
+    <title>Piecewise Function Generator</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -28,17 +28,17 @@
     </script>
 
     <!-- KaTeX CSS & JS for Math Rendering -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" crossorigin="anonymous"></script>
 
-    <!-- HTML-to-Image for Transparent PNG Export -->
-    <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js"></script>
+    <!-- HTML-to-Image for PNG Export -->
+    <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js" crossorigin="anonymous"></script>
 
-    <!-- Math.js for Safe Expression Evaluation -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
+    <!-- Math.js for Expression Evaluation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js" crossorigin="anonymous"></script>
 
     <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
@@ -67,7 +67,6 @@
             background: rgba(99, 102, 241, 0.8);
         }
 
-        /* Glassmorphism panel styling */
         .glass-panel {
             background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(12px);
@@ -103,7 +102,7 @@
                 </div>
                 <div>
                     <h1 class="text-lg font-bold text-white tracking-tight flex items-center gap-2">
-                        Piecewise Math Lab
+                        Piecewise Function Generator
                         <span class="text-xs bg-brand-500/20 text-brand-300 font-medium px-2 py-0.5 rounded-full border border-brand-500/30">v3.5</span>
                     </h1>
                     <p class="text-xs text-slate-400">Build, plot, render notation, and export piecewise functions for documents & worksheets</p>
@@ -135,10 +134,10 @@
 
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-        <!-- LEFT COLUMN: Input Controls & Function Pieces (5 cols) -->
+        <!-- LEFT COLUMN: Controls & Sub-functions (5 cols) -->
         <section class="lg:col-span-5 flex flex-col space-y-5">
             
-            <!-- Global Function Settings Card -->
+            <!-- Global Symbols Card -->
             <div class="glass-panel rounded-2xl p-4 sm:p-5 shadow-xl">
                 <h2 class="text-sm font-semibold text-slate-200 uppercase tracking-wider mb-3.5 flex items-center gap-2">
                     <i class="fa-solid fa-sliders text-brand-400"></i> Function Symbols
@@ -164,12 +163,10 @@
                     <span id="pieceCount" class="text-xs text-slate-400 bg-slate-800 px-2.5 py-0.5 rounded-full border border-slate-700">0 Pieces</span>
                 </div>
 
-                <!-- Container for piece inputs -->
                 <div id="piecesContainer" class="space-y-3.5 overflow-y-auto max-h-[500px] pr-1">
-                    <!-- Dynamic piece elements will be inserted here -->
+                    <!-- Dynamic piece elements inserted here -->
                 </div>
 
-                <!-- Add Piece Button -->
                 <button onclick="addPiece()" class="mt-4 w-full py-2.5 px-4 rounded-xl border border-dashed border-brand-500/40 hover:border-brand-500 bg-brand-500/10 hover:bg-brand-500/20 text-brand-300 text-sm font-medium transition flex items-center justify-center gap-2 group">
                     <i class="fa-solid fa-plus text-xs group-hover:scale-125 transition-transform"></i>
                     Add Sub-Function / Interval
@@ -177,9 +174,10 @@
             </div>
         </section>
 
-        <!-- RIGHT COLUMN: Notation Preview, Visual Graph & Export (7 cols) -->
+        <!-- RIGHT COLUMN: Notation, Graph & Code Studio (7 cols) -->
         <section class="lg:col-span-7 flex flex-col space-y-6">
 
+            <!-- Rendered Notation Studio -->
             <div class="glass-panel rounded-2xl p-5 shadow-xl relative overflow-hidden group">
                 <div class="absolute top-0 right-0 w-32 h-32 bg-brand-500/10 rounded-full blur-2xl pointer-events-none"></div>
                 
@@ -189,11 +187,11 @@
                     </span>
                     
                     <div class="flex flex-wrap items-center gap-2">
-                        <!-- Math Image Color & Size Options -->
-                        <select id="imgTextColor" class="glass-input text-[11px] rounded-lg px-2.5 py-1 text-slate-300 bg-slate-900 border-slate-700 cursor-pointer" title="Text color when exporting math image for worksheets or presentations">
-                            <option value="#000000">Dark Text (For Worksheets)</option>
-                            <option value="#ffffff" selected>Light Text (For Dark Slides)</option>
-                            <option value="current">Current Theme</option>
+                        <select id="imgTextColor" onchange="updateNotationTheme()" class="glass-input text-[11px] rounded-lg px-2.5 py-1 text-slate-300 bg-slate-900 border-slate-700 cursor-pointer" title="Text color and background style when copying or downloading image">
+                            <option value="dark-text-trans" selected>Dark Text (Transparent for Worksheets)</option>
+                            <option value="dark-text-white-bg">Dark Text (White Background)</option>
+                            <option value="light-text-trans">Light Text (Transparent for Dark Slides)</option>
+                            <option value="light-text-dark-bg">Light Text (Dark Background)</option>
                         </select>
 
                         <select id="imgScale" class="glass-input text-[11px] rounded-lg px-2 py-1 text-slate-300 bg-slate-900 border-slate-700 cursor-pointer" title="Export Font Size Scale">
@@ -202,13 +200,11 @@
                             <option value="2">2x Large</option>
                         </select>
 
-                        <!-- Copy Math Image Button -->
                         <button onclick="copyImageToClipboard()" class="px-3 py-1 rounded-lg bg-brand-600 hover:bg-brand-500 text-white text-xs font-medium transition flex items-center gap-1.5 shadow-md active:scale-95">
                             <i class="fa-regular fa-image"></i>
                             <span>Copy Image</span>
                         </button>
 
-                        <!-- Download Math Image Button -->
                         <button onclick="downloadMathImage()" title="Download Math Image PNG" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition flex items-center gap-1 active:scale-95">
                             <i class="fa-solid fa-download"></i>
                         </button>
@@ -216,7 +212,7 @@
                 </div>
 
                 <!-- Rendered KaTeX Box -->
-                <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-4 sm:p-6 min-h-[110px] flex items-center justify-center shadow-inner overflow-x-auto">
+                <div id="katexBox" class="bg-slate-900/90 border border-slate-800 rounded-xl p-4 sm:p-6 min-h-[110px] flex items-center justify-center shadow-inner overflow-x-auto transition-colors duration-200">
                     <div id="katexOutput" class="text-lg sm:text-xl text-white"></div>
                 </div>
             </div>
@@ -229,7 +225,6 @@
                         </h2>
                     </div>
 
-                    <!-- Graph Visual Style Selection -->
                     <div class="flex items-center space-x-2">
                         <label for="graphStyleSelect" class="text-xs text-slate-400 font-medium">Graph Style:</label>
                         <select id="graphStyleSelect" onchange="drawGraph()" class="glass-input text-xs rounded-xl px-3 py-1.5 text-slate-200 bg-slate-900 border-slate-700 cursor-pointer focus:ring-1 focus:ring-brand-500">
@@ -242,10 +237,8 @@
                     </div>
                 </div>
 
-                <!-- Export & Range Toolstrip -->
+                <!-- Graph Toolstrip -->
                 <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-900/60 p-3 rounded-xl border border-slate-800/80 text-xs">
-                    
-                    <!-- Bounds & Interval Step Controls -->
                     <div class="flex flex-wrap items-center gap-2 sm:gap-3">
                         <div class="flex items-center space-x-1">
                             <span class="text-slate-400 font-mono text-[11px] font-semibold">X:</span>
@@ -253,7 +246,7 @@
                             <span class="text-slate-500 text-[11px]">to</span>
                             <input type="number" id="graphXMax" value="10" step="any" onchange="drawGraph()" class="w-13 glass-input text-center rounded px-1.5 py-0.5 text-xs text-slate-200" title="X Maximum">
                             <span class="text-slate-500 text-[10px] ml-0.5">step:</span>
-                            <input type="number" id="graphXStep" value="1" min="0.01" step="any" placeholder="Auto" onchange="drawGraph()" class="w-12 glass-input text-center rounded px-1 py-0.5 text-xs text-slate-200" title="X-axis tick interval / step size">
+                            <input type="number" id="graphXStep" value="1" min="0.01" step="any" placeholder="Auto" onchange="drawGraph()" class="w-12 glass-input text-center rounded px-1 py-0.5 text-xs text-slate-200" title="X-axis tick step size">
                         </div>
 
                         <div class="flex items-center space-x-1">
@@ -262,22 +255,21 @@
                             <span class="text-slate-500 text-[11px]">to</span>
                             <input type="number" id="graphYMax" value="5" step="any" onchange="manualYChange()" class="w-13 glass-input text-center rounded px-1.5 py-0.5 text-xs text-slate-200" title="Y Maximum">
                             <span class="text-slate-500 text-[10px] ml-0.5">step:</span>
-                            <input type="number" id="graphYStep" value="1" min="0.01" step="any" placeholder="Auto" onchange="drawGraph()" class="w-12 glass-input text-center rounded px-1 py-0.5 text-xs text-slate-200" title="Y-axis tick interval / step size">
+                            <input type="number" id="graphYStep" value="1" min="0.01" step="any" placeholder="Auto" onchange="drawGraph()" class="w-12 glass-input text-center rounded px-1 py-0.5 text-xs text-slate-200" title="Y-axis tick step size">
                         </div>
 
                         <div class="flex items-center space-x-2.5 border-l border-slate-800 pl-2">
-                            <label class="flex items-center space-x-1 cursor-pointer text-slate-400 hover:text-slate-200 text-[11px] select-none" title="Auto-scale Y bounds to fit active function values">
+                            <label class="flex items-center space-x-1 cursor-pointer text-slate-400 hover:text-slate-200 text-[11px] select-none">
                                 <input type="checkbox" id="autoYToggle" checked onchange="drawGraph()" class="rounded bg-slate-800 border-slate-700 text-brand-600 focus:ring-brand-500">
                                 <span>Auto Y</span>
                             </label>
 
-                            <label class="flex items-center space-x-1 cursor-pointer text-slate-400 hover:text-slate-200 text-[11px] select-none" title="Force 1:1 scale so 1 unit X equals 1 unit Y visually">
+                            <label class="flex items-center space-x-1 cursor-pointer text-slate-400 hover:text-slate-200 text-[11px] select-none">
                                 <input type="checkbox" id="squareAspectToggle" onchange="drawGraph()" class="rounded bg-slate-800 border-slate-700 text-brand-600 focus:ring-brand-500">
                                 <span>1:1 Scale</span>
                             </label>
                         </div>
 
-                        <!-- Zoom & Reset Action Group -->
                         <div class="flex items-center space-x-1 border-l border-slate-800 pl-2">
                             <button onclick="zoomInGraph()" title="Zoom In (+)" class="p-1 px-2 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-bold transition active:scale-95">
                                 <i class="fa-solid fa-plus"></i>
@@ -291,9 +283,8 @@
                         </div>
                     </div>
 
-                    <!-- Graph Image Copy Controls -->
                     <div class="flex items-center space-x-2">
-                        <button onclick="copyGraphToClipboard()" title="Copy Graph Image to Clipboard" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium transition flex items-center gap-1.5 shadow active:scale-95">
+                        <button onclick="copyGraphToClipboard()" title="Copy Graph Image" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium transition flex items-center gap-1.5 shadow active:scale-95">
                             <i class="fa-regular fa-copy"></i>
                             <span>Copy Graph</span>
                         </button>
@@ -308,16 +299,14 @@
                 <div id="canvasWrapper" class="relative w-full h-[280px] rounded-xl border border-slate-800 overflow-hidden shadow-inner transition-colors duration-200 bg-slate-950">
                     <canvas id="graphCanvas" class="w-full h-full cursor-grab active:cursor-grabbing"></canvas>
 
-                    <!-- Interactive Guide Badge -->
                     <div class="absolute bottom-2 left-2 flex items-center space-x-1 bg-slate-900/80 backdrop-blur border border-slate-800 px-2 py-1 rounded-lg text-[10px] text-slate-400 select-none opacity-75 hover:opacity-100 transition-opacity pointer-events-none">
                         <i class="fa-solid fa-hand text-brand-400"></i>
                         <span>Drag to Pan</span>
                         <span class="mx-1">•</span>
                         <i class="fa-solid fa-magnifying-glass text-brand-400"></i>
-                        <span>Scroll / Pinch to Zoom</span>
+                        <span>Scroll to Zoom</span>
                     </div>
 
-                    <!-- Floating Quick Zoom Buttons -->
                     <div class="absolute top-2 right-2 flex flex-col space-y-1 bg-slate-900/85 backdrop-blur border border-slate-800 p-1 rounded-lg shadow-lg">
                         <button onclick="zoomInGraph()" title="Zoom In" class="w-6 h-6 flex items-center justify-center rounded hover:bg-slate-800 text-slate-200 hover:text-brand-300 text-xs transition active:scale-95">
                             <i class="fa-solid fa-plus"></i>
@@ -330,7 +319,6 @@
                         </button>
                     </div>
 
-                    <!-- Hover Coordinates Overlay -->
                     <div id="graphTooltip" class="absolute hidden pointer-events-none bg-slate-900/90 text-slate-200 border border-slate-700 text-[11px] px-2.5 py-1 rounded-md shadow-lg backdrop-blur">
                         x: <span id="tooltipX">0</span>, y: <span id="tooltipY">0</span>
                     </div>
@@ -352,6 +340,7 @@
                 </div>
             </div>
 
+            <!-- Code Output Studio -->
             <div class="glass-panel rounded-2xl p-5 shadow-xl space-y-3">
                 <div class="flex items-center justify-between border-b border-slate-800 pb-3 flex-wrap gap-2">
                     <div class="flex items-center space-x-1 sm:space-x-2 overflow-x-auto text-xs font-medium">
@@ -372,14 +361,12 @@
                         </button>
                     </div>
 
-                    <!-- Copy Code Button -->
                     <button onclick="copyCurrentCode()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-medium transition flex items-center gap-1.5 active:scale-95">
                         <i class="fa-regular fa-copy"></i>
                         <span id="copyBtnText">Copy Code</span>
                     </button>
                 </div>
 
-                <!-- Code Output Block -->
                 <div class="relative bg-slate-900 border border-slate-800 rounded-xl p-3.5">
                     <pre id="codeOutput" class="text-xs text-brand-200 font-mono overflow-x-auto whitespace-pre-wrap break-all leading-relaxed min-h-[70px]"></pre>
                 </div>
@@ -396,11 +383,11 @@
     </div>
 
     <script>
-        // State management
         let pieces = [];
         let activeTab = 'latex';
+        let isDraggingGraph = false;
+        let lastMousePos = { x: 0, y: 0 };
 
-        // Vibrant colors for function pieces
         const PIECE_COLORS = [
             '#6366f1', // Indigo
             '#10b981', // Emerald
@@ -411,18 +398,6 @@
             '#f97316'  // Orange
         ];
 
-        // High contrast colors for print/worksheet mode
-        const WORKSHEET_COLORS = [
-            '#1e1b4b', // Dark Indigo
-            '#065f46', // Dark Emerald
-            '#9a3412', // Dark Amber/Orange
-            '#831843', // Dark Pink/Magenta
-            '#164e63', // Dark Cyan
-            '#581c87', // Dark Purple
-            '#7c2d12'  // Rust
-        ];
-
-        // Built-in Presets
         const PRESETS = {
             abs: {
                 name: 'f',
@@ -491,6 +466,10 @@
             document.addEventListener('DOMContentLoaded', initApp);
         }
 
+        function generateId() {
+            return 'p_' + Math.random().toString(36).substring(2, 9);
+        }
+
         function resetBuilder() {
             document.getElementById('funcName').value = 'f';
             document.getElementById('varName').value = 'x';
@@ -503,19 +482,12 @@
             updateAll();
         }
 
-        function generateId() {
-            return 'p_' + Math.random().toString(36).substring(2, 9);
-        }
-
         function loadPreset(key) {
             const p = PRESETS[key];
             if (!p) return;
             document.getElementById('funcName').value = p.name;
             document.getElementById('varName').value = p.var;
-            pieces = p.pieces.map(item => ({
-                id: generateId(),
-                ...item
-            }));
+            pieces = p.pieces.map(item => ({ id: generateId(), ...item }));
             renderPiecesList();
             updateAll();
         }
@@ -554,7 +526,6 @@
                 
                 return `
                 <div class="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 transition space-y-2.5 shadow-sm">
-                    <!-- Header Strip -->
                     <div class="flex items-center justify-between gap-2">
                         <div class="flex items-center space-x-2">
                             <span class="w-3 h-3 rounded-full inline-block" style="background-color: ${color}"></span>
@@ -574,16 +545,14 @@
                         </div>
                     </div>
 
-                    <!-- Expression Row -->
                     <div class="grid grid-cols-12 gap-2 items-center">
                         <span class="col-span-3 text-xs text-slate-400 font-mono">Expr:</span>
                         <input type="text" value="${escapeHtml(piece.expr)}" 
                             oninput="updatePieceExpr('${piece.id}', this.value)" 
-                            placeholder="e.g. x^2 - 1, sin(x), \frac{1}{2}x" 
+                            placeholder="e.g. x^2 - 1, sin(x), \\frac{1}{2}x" 
                             class="col-span-9 glass-input rounded-lg px-2.5 py-1 text-xs font-mono text-white">
                     </div>
 
-                    <!-- Condition Row -->
                     <div class="grid grid-cols-12 gap-2 items-center">
                         <span class="col-span-3 text-xs text-slate-400 font-mono">If:</span>
                         <div class="col-span-9">
@@ -606,9 +575,8 @@
                 return `
                     <input type="text" value="${escapeHtml(piece.condExpr || '')}" 
                         oninput="updatePieceCondExpr('${piece.id}', this.value)"
-                        placeholder="e.g. ${v} < 0 or ${v} \\neq 0 or ${v} \\in \\mathbb{R}" 
-                        class="w-full glass-input rounded-lg px-2.5 py-1 text-xs font-mono text-emerald-300"
-                        title="Accepts raw LaTeX commands like \\pi, \\le, \\ge, \\neq, \\infty">
+                        placeholder="e.g. ${v} < 0 or ${v} \\neq 0" 
+                        class="w-full glass-input rounded-lg px-2.5 py-1 text-xs font-mono text-emerald-300">
                 `;
             }
 
@@ -616,8 +584,7 @@
                 <div class="flex items-center space-x-1 text-xs font-mono">
                     <input type="text" value="${escapeHtml(piece.minVal)}" placeholder="-\\infty"
                         oninput="updatePieceBound('${piece.id}', 'minVal', this.value)"
-                        class="w-16 glass-input rounded text-center py-1 text-xs text-slate-200"
-                        title="Accepts numbers or LaTeX like -\\pi, -\\infty">
+                        class="w-16 glass-input rounded text-center py-1 text-xs text-slate-200">
                     
                     <button onclick="togglePieceInc('${piece.id}', 'minInc')" 
                         class="px-1.5 py-1 rounded bg-slate-800 border border-slate-700 text-brand-300 hover:bg-slate-700 font-bold">
@@ -633,61 +600,38 @@
 
                     <input type="text" value="${escapeHtml(piece.maxVal)}" placeholder="\\infty"
                         oninput="updatePieceBound('${piece.id}', 'maxVal', this.value)"
-                        class="w-16 glass-input rounded text-center py-1 text-xs text-slate-200"
-                        title="Accepts numbers or LaTeX like \\pi, \\infty">
+                        class="w-16 glass-input rounded text-center py-1 text-xs text-slate-200">
                 </div>
             `;
         }
 
         function updatePieceMode(id, mode) {
             const p = pieces.find(x => x.id === id);
-            if (p) {
-                p.mode = mode;
-                renderPiecesList();
-                updateAll();
-            }
+            if (p) { p.mode = mode; renderPiecesList(); updateAll(); }
         }
 
         function updatePieceExpr(id, val) {
             const p = pieces.find(x => x.id === id);
-            if (p) {
-                p.expr = val;
-                updateAll();
-            }
+            if (p) { p.expr = val; updateAll(); }
         }
 
         function updatePieceCondExpr(id, val) {
             const p = pieces.find(x => x.id === id);
-            if (p) {
-                p.condExpr = val;
-                updateAll();
-            }
+            if (p) { p.condExpr = val; updateAll(); }
         }
 
         function updatePieceBound(id, key, val) {
             const p = pieces.find(x => x.id === id);
-            if (p) {
-                p[key] = val;
-                updateAll();
-            }
+            if (p) { p[key] = val; updateAll(); }
         }
 
         function togglePieceInc(id, key) {
             const p = pieces.find(x => x.id === id);
-            if (p) {
-                p[key] = !p[key];
-                renderPiecesList();
-                updateAll();
-            }
+            if (p) { p[key] = !p[key]; renderPiecesList(); updateAll(); }
         }
 
-        function getFuncName() {
-            return document.getElementById('funcName').value.trim() || 'f';
-        }
-
-        function getVar() {
-            return document.getElementById('varName').value.trim() || 'x';
-        }
+        function getFuncName() { return document.getElementById('funcName').value.trim() || 'f'; }
+        function getVar() { return document.getElementById('varName').value.trim() || 'x'; }
 
         function escapeHtml(str) {
             if (!str) return '';
@@ -710,9 +654,7 @@
         }
 
         function getPieceConditionLaTeX(piece, vr) {
-            if (piece.mode === 'otherwise') {
-                return '\\text{otherwise}';
-            }
+            if (piece.mode === 'otherwise') return '\\text{otherwise}';
             if (piece.mode === 'raw') {
                 let cond = piece.condExpr || '';
                 if (!cond.includes('\\')) {
@@ -720,10 +662,8 @@
                                .replace(/(?<!\\)>=/g, '\\ge ')
                                .replace(/(?<!\\)!=/g, '\\neq ');
                 }
-                cond = cond.replace(/(?<![\\a-zA-Z])pi\b/g, '\\pi')
-                           .replace(/(?<![\\a-zA-Z])infty\b/g, '\\infty')
-                           .replace(/(?<![\\a-zA-Z])infinity\b/g, '\\infty');
-                return cond;
+                return cond.replace(/(?<![\\a-zA-Z])pi\b/g, '\\pi')
+                           .replace(/(?<![\\a-zA-Z])infty\b/g, '\\infty');
             }
             
             let min = piece.minVal.trim();
@@ -737,44 +677,28 @@
             const minOp = piece.minInc ? '\\le' : '<';
             const maxOp = piece.maxInc ? '\\le' : '<';
 
-            if (min && max) {
-                return `${min} ${minOp} ${vr} ${maxOp} ${max}`;
-            } else if (min && !max) {
-                const op = piece.minInc ? '\\ge' : '>';
-                return `${vr} ${op} ${min}`;
-            } else if (!min && max) {
-                return `${vr} ${maxOp} ${max}`;
-            } else {
-                return '\\text{all } ' + vr;
-            }
+            if (min && max) return `${min} ${minOp} ${vr} ${maxOp} ${max}`;
+            if (min && !max) return `${vr} ${piece.minInc ? '\\ge' : '>'} ${min}`;
+            if (!min && max) return `${vr} ${maxOp} ${max}`;
+            return '\\text{all } ' + vr;
         }
 
         function cleanMathExprForLaTeX(expr) {
             if (!expr) return '0';
             let s = expr.trim();
-            
-            // Avoid double escaping LaTeX commands (e.g., \\sin -> \sin)
             s = s.replace(/\\+(\w+)/g, (m, p1) => '\\' + p1);
 
-            // Convert common math functions to LaTeX if not already backslashed
             const funcs = ['sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'sinh', 'cosh', 'tanh', 'log', 'ln', 'exp'];
             funcs.forEach(fn => {
                 const regex = new RegExp('(?<![\\\\a-zA-Z])' + fn + '\\b', 'g');
                 s = s.replace(regex, '\\' + fn);
             });
 
-            // Handle roots and absolute values safely
             s = s.replace(/(?<![\\a-zA-Z])sqrt\s*\(([^()]+)\)/g, '\\sqrt{$1}');
             s = s.replace(/(?<![\\a-zA-Z])abs\s*\(([^()]+)\)/g, '\\left|$1\\right|');
-
-            // Handle division fractions: (a)/(b) or a/b
             s = s.replace(/([a-zA-Z0-9_\^\+\-\*]+)\s*\/\s*([a-zA-Z0-9_\^\+\-\*]+)/g, '\\frac{$1}{$2}');
-
-            // Handle pi and infinity
             s = s.replace(/(?<![\\a-zA-Z])pi\b/g, '\\pi');
             s = s.replace(/(?<![\\a-zA-Z])infty\b/g, '\\infty');
-
-            // Handle multiplication star
             s = s.replace(/\*/g, ' ');
 
             return s;
@@ -793,25 +717,6 @@
                 .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
                 .replace(/\\left|\\right/g, '')
                 .replace(/\\/g, '');
-        }
-
-        function calculateEval() {
-            const input = document.getElementById('evalInput');
-            const resultEl = document.getElementById('evalResult');
-            if (!input || !resultEl) return;
-            
-            const xVal = parseFloat(input.value);
-            if (isNaN(xVal)) {
-                resultEl.textContent = '--';
-                return;
-            }
-            
-            const res = evaluatePiecewise(xVal);
-            if (!isNaN(res.val) && isFinite(res.val)) {
-                resultEl.textContent = Number.isInteger(res.val) ? res.val.toString() : parseFloat(res.val.toFixed(4)).toString();
-            } else {
-                resultEl.textContent = 'Undefined';
-            }
         }
 
         function renderKaTeX() {
@@ -834,6 +739,38 @@
             } catch (err) {
                 document.getElementById('katexOutput').textContent = latexStr;
             }
+
+            updateNotationTheme();
+        }
+
+        function updateNotationTheme() {
+            const val = document.getElementById('imgTextColor')?.value || 'dark-text-trans';
+            const box = document.getElementById('katexBox');
+            const output = document.getElementById('katexOutput');
+            if (!box || !output) return;
+
+            if (val === 'dark-text-white-bg') {
+                box.className = "bg-white border border-slate-300 rounded-xl p-4 sm:p-6 min-h-[110px] flex items-center justify-center shadow-inner overflow-x-auto transition-colors duration-200";
+            } else if (val === 'dark-text-trans') {
+                box.className = "bg-slate-900/40 border border-slate-800 rounded-xl p-4 sm:p-6 min-h-[110px] flex items-center justify-center shadow-inner overflow-x-auto transition-colors duration-200";
+            } else if (val === 'light-text-dark-bg') {
+                box.className = "bg-slate-950 border border-slate-800 rounded-xl p-4 sm:p-6 min-h-[110px] flex items-center justify-center shadow-inner overflow-x-auto transition-colors duration-200";
+            } else {
+                box.className = "bg-slate-900/90 border border-slate-800 rounded-xl p-4 sm:p-6 min-h-[110px] flex items-center justify-center shadow-inner overflow-x-auto transition-colors duration-200";
+            }
+
+            const targetColor = val.startsWith('dark-text') ? '#0f172a' : '#ffffff';
+            output.style.color = targetColor;
+
+            const allElements = output.querySelectorAll('*');
+            allElements.forEach(el => {
+                el.style.setProperty('color', targetColor, 'important');
+                el.style.setProperty('border-color', targetColor, 'important');
+                if (el.tagName.toLowerCase() === 'svg' || el.tagName.toLowerCase() === 'path') {
+                    el.style.setProperty('fill', targetColor, 'important');
+                    el.style.setProperty('stroke', targetColor, 'important');
+                }
+            });
         }
 
         function updateCodeOutput() {
@@ -898,13 +835,9 @@
             const minOp = piece.minInc ? '<=' : '<';
             const maxOp = piece.maxInc ? '<=' : '<';
 
-            if (min && max) {
-                return `(${min} ${minOp} ${vr}) & (${vr} ${maxOp} ${max})`;
-            } else if (min) {
-                return `${vr} ${piece.minInc ? '>=' : '>'} ${min}`;
-            } else if (max) {
-                return `${vr} ${maxOp} ${max}`;
-            }
+            if (min && max) return `(${min} ${minOp} ${vr}) & (${vr} ${maxOp} ${max})`;
+            if (min) return `${vr} ${piece.minInc ? '>=' : '>'} ${min}`;
+            if (max) return `${vr} ${maxOp} ${max}`;
             return 'True';
         }
 
@@ -924,15 +857,30 @@
 
         function copyCurrentCode() {
             const text = document.getElementById('codeOutput').textContent;
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(() => showToast("Code copied to clipboard!"));
-            } else {
+            let success = false;
+
+            try {
                 const textArea = document.createElement("textarea");
                 textArea.value = text;
+                textArea.style.position = "fixed";
+                textArea.style.left = "-9999px";
+                textArea.style.top = "-9999px";
                 document.body.appendChild(textArea);
+                textArea.focus();
                 textArea.select();
-                document.execCommand('copy');
+                success = document.execCommand('copy');
                 document.body.removeChild(textArea);
+            } catch (e) {
+                success = false;
+            }
+
+            if (!success && navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast("Code copied to clipboard!");
+                }).catch(() => {
+                    showToast("Clipboard copy restricted.");
+                });
+            } else if (success) {
                 showToast("Code copied to clipboard!");
             }
         }
@@ -946,6 +894,25 @@
                 toast.classList.remove('translate-y-0', 'opacity-100');
                 toast.classList.add('translate-y-20', 'opacity-0');
             }, 2500);
+        }
+
+        function calculateEval() {
+            const input = document.getElementById('evalInput');
+            const resultEl = document.getElementById('evalResult');
+            if (!input || !resultEl) return;
+            
+            const xVal = parseFloat(input.value);
+            if (isNaN(xVal)) {
+                resultEl.textContent = '--';
+                return;
+            }
+            
+            const res = evaluatePiecewise(xVal);
+            if (!isNaN(res.val) && isFinite(res.val)) {
+                resultEl.textContent = Number.isInteger(res.val) ? res.val.toString() : parseFloat(res.val.toFixed(4)).toString();
+            } else {
+                resultEl.textContent = 'Undefined';
+            }
         }
 
         function evaluatePiecewise(xVal) {
@@ -1014,146 +981,138 @@
         }
 
         async function copyImageToClipboard() {
-            const blob = await generateMathImageBlob();
-            if (!blob) return;
-
             try {
+                showToast('Generating math image...');
+                const blob = await generateMathImageBlob();
+                if (!blob) {
+                    showToast('Failed to generate math image.');
+                    return;
+                }
+
+                let copied = false;
                 if (navigator.clipboard && window.ClipboardItem) {
-                    await navigator.clipboard.write([
-                        new ClipboardItem({ 'image/png': blob })
-                    ]);
-                    showToast('Transparent Math PNG copied to clipboard!');
-                } else {
-                    downloadMathImage();
+                    try {
+                        await navigator.clipboard.write([
+                            new ClipboardItem({ 'image/png': blob })
+                        ]);
+                        copied = true;
+                        showToast('Math PNG copied to clipboard!');
+                    } catch (clipErr) {
+                        copied = false;
+                    }
+                }
+
+                if (!copied) {
+                    downloadMathImageWithBlob(blob);
+                    showToast('Clipboard restricted — downloaded PNG!');
                 }
             } catch (err) {
-                console.error('Copy image failed:', err);
                 downloadMathImage();
             }
         }
 
         async function downloadMathImage() {
+            showToast('Generating math image...');
             const blob = await generateMathImageBlob();
-            if (!blob) return;
+            if (!blob) {
+                showToast('Failed to generate math image.');
+                return;
+            }
+            downloadMathImageWithBlob(blob);
+            showToast('Math PNG downloaded!');
+        }
 
+        function downloadMathImageWithBlob(blob) {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
             a.download = `piecewise-math-${getFuncName()}.png`;
             a.click();
-            showToast('Math PNG downloaded!');
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
         }
 
         async function generateMathImageBlob() {
-            const katexEl = document.getElementById('katexOutput');
-            if (!katexEl) return null;
+            const selectedOption = document.getElementById('imgTextColor')?.value || 'dark-text-trans';
+            const scaleFactor = parseFloat(document.getElementById('imgScale')?.value) || 1.5;
 
-            const selectedColorOption = document.getElementById('imgTextColor').value;
-            const scaleFactor = parseFloat(document.getElementById('imgScale').value) || 1.5;
+            const isDarkText = selectedOption.startsWith('dark-text');
+            const isWhiteBg = selectedOption === 'dark-text-white-bg';
+            const isDarkBg = selectedOption === 'light-text-dark-bg';
 
-            let targetColor = '#ffffff';
-            if (selectedColorOption === '#000000') {
-                targetColor = '#000000';
-            } else if (selectedColorOption === 'current') {
-                targetColor = window.getComputedStyle(katexEl).color || '#ffffff';
+            const bgColor = isWhiteBg ? '#ffffff' : (isDarkBg ? '#020617' : null);
+            const textColor = isDarkText ? '#0f172a' : '#ffffff';
+
+            if (document.fonts && document.fonts.ready) {
+                try { await document.fonts.ready; } catch(e) {}
             }
+
+            const katexOutput = document.getElementById('katexOutput');
+            if (!katexOutput) return null;
 
             const wrapper = document.createElement('div');
-            wrapper.style.position = 'absolute';
-            wrapper.style.left = '-9999px';
-            wrapper.style.top = '-9999px';
-            wrapper.style.padding = `${Math.round(20 * scaleFactor)}px ${Math.round(30 * scaleFactor)}px`;
-            wrapper.style.background = 'transparent';
-            wrapper.style.color = targetColor;
-            wrapper.style.display = 'inline-block';
-            wrapper.style.transform = `scale(${scaleFactor})`;
-            wrapper.style.transformOrigin = 'top left';
-            
-            wrapper.innerHTML = katexEl.innerHTML;
+            wrapper.style.position = 'fixed';
+            wrapper.style.top = '0';
+            wrapper.style.left = '0';
+            wrapper.style.opacity = '0';
+            wrapper.style.pointerEvents = 'none';
+            wrapper.style.zIndex = '-99999';
+
+            const container = document.createElement('div');
+            container.style.padding = '36px 48px';
+            container.style.backgroundColor = bgColor || 'transparent';
+            container.style.borderRadius = '12px';
+            container.style.display = 'inline-block';
+
+            const clone = katexOutput.cloneNode(true);
+            const mathml = clone.querySelector('.katex-mathml');
+            if (mathml) mathml.remove();
+
+            const allNodes = clone.querySelectorAll('*');
+            allNodes.forEach(node => {
+                node.style.setProperty('color', textColor, 'important');
+                node.style.setProperty('border-color', textColor, 'important');
+                if (node.tagName.toLowerCase() === 'svg' || node.tagName.toLowerCase() === 'path') {
+                    node.style.setProperty('fill', textColor, 'important');
+                    node.style.setProperty('stroke', textColor, 'important');
+                }
+            });
+            clone.style.setProperty('color', textColor, 'important');
+
+            container.appendChild(clone);
+            wrapper.appendChild(container);
             document.body.appendChild(wrapper);
 
-            const allElements = wrapper.querySelectorAll('*');
-            allElements.forEach(el => {
-                el.style.color = targetColor;
-                el.style.borderColor = targetColor;
-            });
-
+            let blob = null;
             try {
-                if (typeof htmlToImage === 'undefined') {
-                    throw new Error('html-to-image library not loaded');
-                }
-
-                const blob = await htmlToImage.toBlob(wrapper, {
-                    backgroundColor: null,
-                    pixelRatio: 3,
+                blob = await htmlToImage.toBlob(container, {
+                    pixelRatio: 3 * scaleFactor,
+                    backgroundColor: bgColor || undefined,
                     cacheBust: true
                 });
-
-                document.body.removeChild(wrapper);
-                return blob;
             } catch (err) {
-                if (document.body.contains(wrapper)) document.body.removeChild(wrapper);
-                console.error('Image generation failed:', err);
-                return null;
+                console.warn('htmlToImage export failed:', err);
+            } finally {
+                if (document.body.contains(wrapper)) {
+                    document.body.removeChild(wrapper);
+                }
             }
-        }
 
-        function resetGraphZoom() {
-            document.getElementById('graphXMin').value = -10;
-            document.getElementById('graphXMax').value = 10;
-            document.getElementById('graphXStep').value = 1;
-            document.getElementById('graphYMin').value = -5;
-            document.getElementById('graphYMax').value = 5;
-            document.getElementById('graphYStep').value = 1;
-            document.getElementById('autoYToggle').checked = true;
-            document.getElementById('squareAspectToggle').checked = false;
-            drawGraph();
-        }
+            if (!blob || blob.size < 500) {
+                try {
+                    const box = document.getElementById('katexBox');
+                    if (box) {
+                        blob = await htmlToImage.toBlob(box, {
+                            pixelRatio: 3 * scaleFactor,
+                            backgroundColor: bgColor || undefined,
+                            cacheBust: true
+                        });
+                    }
+                } catch (fallbackErr) {
+                    console.warn('htmlToImage fallback failed:', fallbackErr);
+                }
+            }
 
-        function zoomInGraph() {
-            zoomAtCenter(0.8);
-        }
-
-        function zoomOutGraph() {
-            zoomAtCenter(1.25);
-        }
-
-        function zoomAtCenter(factor) {
-            let xMin = parseFloat(document.getElementById('graphXMin').value) || -10;
-            let xMax = parseFloat(document.getElementById('graphXMax').value) || 10;
-            let yMin = parseFloat(document.getElementById('graphYMin').value) || -5;
-            let yMax = parseFloat(document.getElementById('graphYMax').value) || 5;
-
-            let cx = (xMin + xMax) / 2;
-            let cy = (yMin + yMax) / 2;
-
-            applyZoom(cx, cy, 0.5, 0.5, factor);
-        }
-
-        function applyZoom(cx, cy, rx, ry, factor) {
-            let xMin = parseFloat(document.getElementById('graphXMin').value) || -10;
-            let xMax = parseFloat(document.getElementById('graphXMax').value) || 10;
-            let yMin = parseFloat(document.getElementById('graphYMin').value) || -5;
-            let yMax = parseFloat(document.getElementById('graphYMax').value) || 5;
-
-            let xRange = (xMax - xMin) * factor;
-            let yRange = (yMax - yMin) * factor;
-
-            if (xRange < 0.1 || yRange < 0.1) return;
-            if (xRange > 1000 || yRange > 1000) return;
-
-            let newXMin = cx - rx * xRange;
-            let newXMax = cx + (1 - rx) * xRange;
-            let newYMin = cy - ry * yRange;
-            let newYMax = cy + (1 - ry) * yRange;
-
-            document.getElementById('graphXMin').value = parseFloat(newXMin.toFixed(2));
-            document.getElementById('graphXMax').value = parseFloat(newXMax.toFixed(2));
-            document.getElementById('graphYMin').value = parseFloat(newYMin.toFixed(2));
-            document.getElementById('graphYMax').value = parseFloat(newYMax.toFixed(2));
-
-            document.getElementById('autoYToggle').checked = false;
-            drawGraph();
+            return blob;
         }
 
         function manualYChange() {
@@ -1161,222 +1120,198 @@
             drawGraph();
         }
 
-        function drawGraph(targetCanvas = null) {
-            const isCustomCanvas = targetCanvas instanceof HTMLCanvasElement;
-            const canvas = isCustomCanvas ? targetCanvas : document.getElementById('graphCanvas');
+        function drawGraph(targetCanvas) {
+            const canvas = (targetCanvas instanceof HTMLCanvasElement) ? targetCanvas : document.getElementById('graphCanvas');
             if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
 
-            const selectedStyle = document.getElementById('graphStyleSelect')?.value || 'dark';
-
-            const wrapper = document.getElementById('canvasWrapper');
-            if (wrapper && !isCustomCanvas) {
-                if (selectedStyle === 'worksheet' || selectedStyle === 'gridpaper') {
-                    wrapper.className = 'relative w-full h-[280px] rounded-xl border border-slate-300 overflow-hidden shadow-inner transition-colors duration-200 bg-white';
-                } else {
-                    wrapper.className = 'relative w-full h-[280px] rounded-xl border border-slate-800 overflow-hidden shadow-inner transition-colors duration-200 bg-slate-950';
-                }
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            
+            if (rect.width > 0 && rect.height > 0) {
+                canvas.width = rect.width * dpr;
+                canvas.height = rect.height * dpr;
             }
 
-            const isExportMode = isCustomCanvas;
-            const rect = (canvas.getBoundingClientRect && typeof canvas.getBoundingClientRect === 'function')
-                ? canvas.getBoundingClientRect() 
-                : { width: 900, height: 500 };
-
-            const dpr = isExportMode ? 3 : (window.devicePixelRatio || 1);
-            const displayWidth = rect.width || canvas.clientWidth || 600;
-            const displayHeight = rect.height || canvas.clientHeight || 280;
-
-            canvas.width = (isExportMode ? 900 : displayWidth) * dpr;
-            canvas.height = (isExportMode ? 500 : displayHeight) * dpr;
-
-            const ctx = canvas.getContext('2d');
             const width = canvas.width;
             const height = canvas.height;
+            if (width === 0 || height === 0) return;
 
-            ctx.clearRect(0, 0, width, height);
+            ctx.save();
+            ctx.scale(dpr, dpr);
 
-            // Theme Color Config
-            let bgFill = null;
-            let gridColor = 'rgba(255, 255, 255, 0.1)';
-            let axisColor = '#94a3b8';
-            let textColor = '#cbd5e1';
-            let colorPalette = PIECE_COLORS;
-
-            if (selectedStyle === 'dark') {
-                bgFill = '#020617';
-            } else if (selectedStyle === 'worksheet') {
-                bgFill = '#ffffff';
-                gridColor = 'rgba(0, 0, 0, 0.12)';
-                axisColor = '#0f172a';
-                textColor = '#0f172a';
-                colorPalette = WORKSHEET_COLORS;
-            } else if (selectedStyle === 'gridpaper') {
-                bgFill = '#f8fafc';
-                gridColor = 'rgba(59, 130, 246, 0.22)';
-                axisColor = '#1e3a8a';
-                textColor = '#1e3a8a';
-                colorPalette = WORKSHEET_COLORS;
-            } else if (selectedStyle === 'transparent-dark') {
-                gridColor = 'rgba(0, 0, 0, 0.15)';
-                axisColor = '#0f172a';
-                textColor = '#0f172a';
-                colorPalette = WORKSHEET_COLORS;
-            } else if (selectedStyle === 'transparent-light') {
-                gridColor = 'rgba(255, 255, 255, 0.15)';
-                axisColor = '#e2e8f0';
-                textColor = '#f1f5f9';
-                colorPalette = PIECE_COLORS;
-            }
-
-            if (bgFill) {
-                ctx.fillStyle = bgFill;
-                ctx.fillRect(0, 0, width, height);
-            }
+            const displayWidth = rect.width || (width / dpr);
+            const displayHeight = rect.height || (height / dpr);
 
             let xMin = parseFloat(document.getElementById('graphXMin').value) || -10;
             let xMax = parseFloat(document.getElementById('graphXMax').value) || 10;
             if (xMin >= xMax) xMax = xMin + 1;
 
-            let autoY = document.getElementById('autoYToggle').checked;
-            let squareAspect = document.getElementById('squareAspectToggle').checked;
+            const isAutoY = document.getElementById('autoYToggle').checked;
+            const isSquareAspect = document.getElementById('squareAspectToggle').checked;
 
             let yMin = parseFloat(document.getElementById('graphYMin').value) || -5;
             let yMax = parseFloat(document.getElementById('graphYMax').value) || 5;
 
-            if (autoY) {
-                let sampledY = [];
-                const samples = 300;
-                const dx = (xMax - xMin) / samples;
+            if (isAutoY) {
+                let autoMin = Infinity;
+                let autoMax = -Infinity;
+                const sampleSteps = 200;
+                const dx = (xMax - xMin) / sampleSteps;
 
-                for (let i = 0; i <= samples; i++) {
-                    let x = xMin + i * dx;
-                    let res = evaluatePiecewise(x);
-                    if (!isNaN(res.val) && isFinite(res.val)) {
-                        sampledY.push(res.val);
+                for (let i = 0; i <= sampleSteps; i++) {
+                    const x = xMin + i * dx;
+                    const evalRes = evaluatePiecewise(x);
+                    if (!isNaN(evalRes.val) && isFinite(evalRes.val)) {
+                        autoMin = Math.min(autoMin, evalRes.val);
+                        autoMax = Math.max(autoMax, evalRes.val);
                     }
                 }
 
-                if (sampledY.length > 0) {
-                    let minY = Math.min(...sampledY);
-                    let maxY = Math.max(...sampledY);
-                    if (minY !== maxY) {
-                        let padding = Math.max((maxY - minY) * 0.2, 2);
-                        yMin = Math.floor(minY - padding);
-                        yMax = Math.ceil(maxY + padding);
-                    } else {
-                        yMin = minY - 5;
-                        yMax = maxY + 5;
-                    }
+                if (autoMin !== Infinity && autoMax !== -Infinity) {
+                    const padding = Math.max((autoMax - autoMin) * 0.15, 1);
+                    yMin = Math.floor(autoMin - padding);
+                    yMax = Math.ceil(autoMax + padding);
+                } else {
+                    yMin = -5; yMax = 5;
                 }
+                document.getElementById('graphYMin').value = parseFloat(yMin.toFixed(2));
+                document.getElementById('graphYMax').value = parseFloat(yMax.toFixed(2));
             }
 
-            if (squareAspect) {
-                let yCenter = (yMin + yMax) / 2;
-                let requiredYSpan = (xMax - xMin) * (height / width);
-                yMin = parseFloat((yCenter - requiredYSpan / 2).toFixed(2));
-                yMax = parseFloat((yCenter + requiredYSpan / 2).toFixed(2));
+            if (isSquareAspect) {
+                const xSpan = xMax - xMin;
+                const ySpanNeeded = (displayHeight / displayWidth) * xSpan;
+                const yCenter = (yMin + yMax) / 2;
+                yMin = yCenter - ySpanNeeded / 2;
+                yMax = yCenter + ySpanNeeded / 2;
             }
-
-            document.getElementById('graphYMin').value = yMin;
-            document.getElementById('graphYMax').value = yMax;
 
             if (yMin >= yMax) yMax = yMin + 1;
 
-            const toScreenX = (x) => ((x - xMin) / (xMax - xMin)) * width;
-            const toScreenY = (y) => height - ((y - yMin) / (yMax - yMin)) * height;
+            const styleKey = document.getElementById('graphStyleSelect')?.value || 'dark';
+            let bgColor = '#020617';
+            let gridColor = 'rgba(255, 255, 255, 0.08)';
+            let axisColor = '#94a3b8';
+            let textColor = '#cbd5e1';
 
-            let customXStep = parseFloat(document.getElementById('graphXStep').value);
-            let customYStep = parseFloat(document.getElementById('graphYStep').value);
+            if (styleKey === 'worksheet') {
+                bgColor = '#ffffff';
+                gridColor = '#e2e8f0';
+                axisColor = '#1e293b';
+                textColor = '#0f172a';
+            } else if (styleKey === 'gridpaper') {
+                bgColor = '#f0f9ff';
+                gridColor = '#bae6fd';
+                axisColor = '#0369a1';
+                textColor = '#0c4a6e';
+            } else if (styleKey === 'transparent-dark') {
+                bgColor = 'transparent';
+                gridColor = 'rgba(255, 255, 255, 0.12)';
+                axisColor = '#e2e8f0';
+                textColor = '#f8fafc';
+            } else if (styleKey === 'transparent-light') {
+                bgColor = 'transparent';
+                gridColor = 'rgba(0, 0, 0, 0.12)';
+                axisColor = '#1e293b';
+                textColor = '#0f172a';
+            }
 
-            const xStep = (!isNaN(customXStep) && customXStep > 0) 
-                ? customXStep 
-                : Math.max(0.5, Math.round((xMax - xMin) / 10));
+            ctx.clearRect(0, 0, displayWidth, displayHeight);
+            if (bgColor !== 'transparent') {
+                ctx.fillStyle = bgColor;
+                ctx.fillRect(0, 0, displayWidth, displayHeight);
+            }
 
-            const yStep = (!isNaN(customYStep) && customYStep > 0) 
-                ? customYStep 
-                : Math.max(0.5, Math.round((yMax - yMin) / 8));
+            const toScreenX = (x) => ((x - xMin) / (xMax - xMin)) * displayWidth;
+            const toScreenY = (y) => displayHeight - ((y - yMin) / (yMax - yMin)) * displayHeight;
 
-            // Render Grid Lines
+            let xStep = parseFloat(document.getElementById('graphXStep').value);
+            let yStep = parseFloat(document.getElementById('graphYStep').value);
+
+            if (isNaN(xStep) || xStep <= 0) xStep = autoStep(xMax - xMin);
+            if (isNaN(yStep) || yStep <= 0) yStep = autoStep(yMax - yMin);
+
+            ctx.lineWidth = 1;
             ctx.strokeStyle = gridColor;
-            ctx.lineWidth = 1 * dpr;
             ctx.fillStyle = textColor;
-            ctx.font = `${11 * dpr}px Fira Code, monospace`;
+            ctx.font = '10px Inter, sans-serif';
 
-            for (let x = Math.ceil(xMin / xStep) * xStep; x <= xMax; x += xStep) {
-                let sx = toScreenX(x);
+            const startX = Math.ceil(xMin / xStep) * xStep;
+            for (let x = startX; x <= xMax; x += xStep) {
+                const sx = toScreenX(x);
                 ctx.beginPath();
                 ctx.moveTo(sx, 0);
-                ctx.lineTo(sx, height);
+                ctx.lineTo(sx, displayHeight);
                 ctx.stroke();
 
-                if (Math.abs(x) > 0.0001) {
-                    let sy = Math.max(20 * dpr, Math.min(height - 10 * dpr, toScreenY(0) + 14 * dpr));
-                    let label = Number.isInteger(x) ? x.toString() : parseFloat(x.toFixed(2)).toString();
-                    ctx.fillText(label, sx - 8 * dpr, sy);
+                if (Math.abs(x) > 1e-6) {
+                    const sy = Math.min(Math.max(toScreenY(0) + 12, 12), displayHeight - 4);
+                    ctx.fillText(x.toFixed(xStep < 1 ? 1 : 0), sx - 6, sy);
                 }
             }
 
-            for (let y = Math.ceil(yMin / yStep) * yStep; y <= yMax; y += yStep) {
-                let sy = toScreenY(y);
+            const startY = Math.ceil(yMin / yStep) * yStep;
+            for (let y = startY; y <= yMax; y += yStep) {
+                const sy = toScreenY(y);
                 ctx.beginPath();
                 ctx.moveTo(0, sy);
-                ctx.lineTo(width, sy);
+                ctx.lineTo(displayWidth, sy);
                 ctx.stroke();
 
-                if (Math.abs(y) > 0.0001) {
-                    let sx = Math.max(8 * dpr, Math.min(width - 30 * dpr, toScreenX(0) + 6 * dpr));
-                    let label = Number.isInteger(y) ? y.toString() : parseFloat(y.toFixed(2)).toString();
-                    ctx.fillText(label, sx, sy + 4 * dpr);
+                if (Math.abs(y) > 1e-6) {
+                    const sx = Math.min(Math.max(toScreenX(0) + 4, 4), displayWidth - 24);
+                    ctx.fillText(y.toFixed(yStep < 1 ? 1 : 0), sx, sy - 3);
                 }
             }
 
-            // Main Axis Lines
             ctx.strokeStyle = axisColor;
-            ctx.lineWidth = 2 * dpr;
+            ctx.lineWidth = 2;
 
-            let zeroY = toScreenY(0);
-            ctx.beginPath();
-            ctx.moveTo(0, zeroY);
-            ctx.lineTo(width, zeroY);
-            ctx.stroke();
-
-            let zeroX = toScreenX(0);
-            ctx.beginPath();
-            ctx.moveTo(zeroX, 0);
-            ctx.lineTo(zeroX, height);
-            ctx.stroke();
-
-            // Label 'x' and 'y'
-            ctx.font = `bold ${12 * dpr}px Fira Code`;
-            ctx.fillText(getVar(), width - 18 * dpr, Math.max(20 * dpr, zeroY - 8 * dpr));
-            ctx.fillText(getFuncName() + '(' + getVar() + ')', Math.max(10 * dpr, zeroX + 8 * dpr), 20 * dpr);
-
-            const isLightBg = selectedStyle === 'worksheet' || selectedStyle === 'gridpaper';
-
-            pieces.forEach((piece, pIdx) => {
-                const color = colorPalette[pIdx % colorPalette.length];
-                ctx.strokeStyle = color;
-                ctx.lineWidth = 3 * dpr;
-
+            const originX = toScreenX(0);
+            if (originX >= 0 && originX <= displayWidth) {
                 ctx.beginPath();
+                ctx.moveTo(originX, 0);
+                ctx.lineTo(originX, displayHeight);
+                ctx.stroke();
+            }
+
+            const originY = toScreenY(0);
+            if (originY >= 0 && originY <= displayHeight) {
+                ctx.beginPath();
+                ctx.moveTo(0, originY);
+                ctx.lineTo(displayWidth, originY);
+                ctx.stroke();
+            }
+
+            pieces.forEach((piece, index) => {
+                const color = (styleKey === 'worksheet' || styleKey === 'transparent-light') 
+                    ? '#0284c7' 
+                    : PIECE_COLORS[index % PIECE_COLORS.length];
+
+                ctx.strokeStyle = color;
+                ctx.fillStyle = color;
+                ctx.lineWidth = 2.5;
+
+                const steps = displayWidth * 2;
+                const dx = (xMax - xMin) / steps;
                 let drawing = false;
 
-                const pSamples = 400;
-                const pDx = (xMax - xMin) / pSamples;
-
-                for (let i = 0; i <= pSamples; i++) {
-                    let x = xMin + i * pDx;
+                ctx.beginPath();
+                for (let i = 0; i <= steps; i++) {
+                    const x = xMin + i * dx;
                     const vr = getVar();
 
                     if (isConditionMet(piece, x, vr)) {
                         try {
                             let scope = {};
                             scope[vr] = x;
-                            let y = math.evaluate(piece.expr, scope);
+                            const y = math.evaluate(piece.expr, scope);
 
                             if (!isNaN(y) && isFinite(y)) {
-                                let sx = toScreenX(x);
-                                let sy = toScreenY(y);
+                                const sx = toScreenX(x);
+                                const sy = toScreenY(y);
 
                                 if (!drawing) {
                                     ctx.moveTo(sx, sy);
@@ -1396,241 +1331,213 @@
                 }
                 ctx.stroke();
 
-                if (piece.mode === 'bounded') {
-                    let min = parseFloat(piece.minVal);
-                    let max = parseFloat(piece.maxVal);
-
-                    if (!isNaN(min) && min >= xMin && min <= xMax) {
-                        drawEndpointDot(ctx, min, piece.expr, piece.minInc, color, toScreenX, toScreenY, dpr, isLightBg);
-                    }
-                    if (!isNaN(max) && max >= xMin && max <= xMax) {
-                        drawEndpointDot(ctx, max, piece.expr, piece.maxInc, color, toScreenX, toScreenY, dpr, isLightBg);
-                    }
-                }
+                drawEndpointDots(ctx, piece, color, toScreenX, toScreenY);
             });
+
+            ctx.restore();
         }
 
-        function drawEndpointDot(ctx, xVal, expr, isInclusive, color, toScreenX, toScreenY, dpr, isLightBg) {
-            try {
-                let vr = getVar();
-                let scope = {};
-                scope[vr] = xVal;
-                let yVal = math.evaluate(expr, scope);
-
-                if (isNaN(yVal) || !isFinite(yVal)) return;
-
-                let sx = toScreenX(xVal);
-                let sy = toScreenY(yVal);
-                let radius = 5 * dpr;
-
-                ctx.beginPath();
-                ctx.arc(sx, sy, radius, 0, 2 * Math.PI);
-
-                if (isInclusive) {
-                    ctx.fillStyle = color;
-                    ctx.fill();
-                    ctx.strokeStyle = isLightBg ? '#ffffff' : '#020617';
-                    ctx.lineWidth = 1.5 * dpr;
-                    ctx.stroke();
-                } else {
-                    ctx.fillStyle = isLightBg ? '#ffffff' : '#020617';
-                    ctx.fill();
-                    ctx.strokeStyle = color;
-                    ctx.lineWidth = 2.5 * dpr;
-                    ctx.stroke();
-                }
-            } catch (e) {}
+        function autoStep(range) {
+            const rawStep = range / 8;
+            const mag = Math.pow(10, Math.floor(Math.log10(rawStep)));
+            const norm = rawStep / mag;
+            if (norm < 1.5) return mag;
+            if (norm < 3.5) return 2 * mag;
+            if (norm < 7.5) return 5 * mag;
+            return 10 * mag;
         }
 
-        async function copyGraphToClipboard() {
-            const offscreenCanvas = document.createElement('canvas');
-            drawGraph(offscreenCanvas);
+        function drawEndpointDots(ctx, piece, color, toScreenX, toScreenY) {
+            if (piece.mode !== 'bounded') return;
 
-            offscreenCanvas.toBlob(async (blob) => {
-                if (!blob) {
-                    showToast("Failed to generate graph image");
-                    return;
-                }
+            const vr = getVar();
+            let minVal = parseFloat(sanitizeLatexForMathJS(piece.minVal));
+            let maxVal = parseFloat(sanitizeLatexForMathJS(piece.maxVal));
 
+            if (!isNaN(minVal)) {
                 try {
-                    if (navigator.clipboard && window.ClipboardItem) {
-                        await navigator.clipboard.write([
-                            new ClipboardItem({ 'image/png': blob })
-                        ]);
-                        showToast("Graph image copied to clipboard!");
-                    } else {
-                        downloadGraphImage();
+                    let scope = {}; scope[vr] = minVal;
+                    let y = math.evaluate(piece.expr, scope);
+                    if (!isNaN(y) && isFinite(y)) {
+                        drawDot(ctx, toScreenX(minVal), toScreenY(y), color, piece.minInc);
                     }
-                } catch (err) {
-                    console.error("Clipboard export error:", err);
-                    downloadGraphImage();
-                }
-            }, 'image/png');
+                } catch(e){}
+            }
+
+            if (!isNaN(maxVal)) {
+                try {
+                    let scope = {}; scope[vr] = maxVal;
+                    let y = math.evaluate(piece.expr, scope);
+                    if (!isNaN(y) && isFinite(y)) {
+                        drawDot(ctx, toScreenX(maxVal), toScreenY(y), color, piece.maxInc);
+                    }
+                } catch(e){}
+            }
         }
 
-        function downloadGraphImage() {
-            const offscreenCanvas = document.createElement('canvas');
-            drawGraph(offscreenCanvas);
-
-            const a = document.createElement('a');
-            a.download = `piecewise-graph-${getFuncName()}.png`;
-            a.href = offscreenCanvas.toDataURL('image/png');
-            a.click();
-            showToast("Graph downloaded as PNG!");
+        function drawDot(ctx, x, y, color, isSolid) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(x, y, 4.5, 0, Math.PI * 2);
+            if (isSolid) {
+                ctx.fillStyle = color;
+                ctx.fill();
+            } else {
+                ctx.fillStyle = '#0f172a';
+                ctx.fill();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = color;
+                ctx.stroke();
+            }
+            ctx.restore();
         }
 
         function setupGraphInteractions() {
             const canvas = document.getElementById('graphCanvas');
-            const tooltip = document.getElementById('graphTooltip');
+            const wrapper = document.getElementById('canvasWrapper');
+            if (!canvas || !wrapper) return;
 
-            let isDragging = false;
-            let startX = 0, startY = 0;
-            let initialXMin = 0, initialXMax = 0, initialYMin = 0, initialYMax = 0;
-            let touchStartDist = 0;
-            let initialPinchZoom = false;
-
-            canvas.addEventListener('mousemove', (e) => {
-                const rect = canvas.getBoundingClientRect();
-                const mouseX = e.clientX - rect.left;
-                const mouseY = e.clientY - rect.top;
-
-                let xMin = parseFloat(document.getElementById('graphXMin').value) || -10;
-                let xMax = parseFloat(document.getElementById('graphXMax').value) || 10;
-
-                let graphX = xMin + (mouseX / rect.width) * (xMax - xMin);
-                let res = evaluatePiecewise(graphX);
-
-                if (!isNaN(res.val)) {
-                    tooltip.style.display = 'block';
-                    tooltip.style.left = `${mouseX + 12}px`;
-                    tooltip.style.top = `${mouseY - 28}px`;
-                    
-                    document.getElementById('tooltipX').textContent = graphX.toFixed(2);
-                    document.getElementById('tooltipY').textContent = res.val.toFixed(2);
-                } else {
-                    tooltip.style.display = 'none';
-                }
-            });
-
-            canvas.addEventListener('mouseleave', () => {
-                tooltip.style.display = 'none';
-            });
-
-            canvas.addEventListener('wheel', (e) => {
+            wrapper.addEventListener('wheel', (e) => {
                 e.preventDefault();
+                const zoomFactor = e.deltaY < 0 ? 0.85 : 1.15;
+                applyZoom(zoomFactor);
+            }, { passive: false });
+
+            canvas.addEventListener('mousedown', (e) => {
+                isDraggingGraph = true;
+                lastMousePos = { x: e.clientX, y: e.clientY };
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDraggingGraph) {
+                    updateTooltip(e, canvas);
+                    return;
+                }
+
+                const dx = e.clientX - lastMousePos.x;
+                const dy = e.clientY - lastMousePos.y;
+                lastMousePos = { x: e.clientX, y: e.clientY };
+
                 const rect = canvas.getBoundingClientRect();
-                const mouseX = e.clientX - rect.left;
-                const mouseY = e.clientY - rect.top;
-
-                let rx = mouseX / rect.width;
-                let ry = 1.0 - (mouseY / rect.height);
-
                 let xMin = parseFloat(document.getElementById('graphXMin').value) || -10;
                 let xMax = parseFloat(document.getElementById('graphXMax').value) || 10;
                 let yMin = parseFloat(document.getElementById('graphYMin').value) || -5;
                 let yMax = parseFloat(document.getElementById('graphYMax').value) || 5;
 
-                let cx = xMin + rx * (xMax - xMin);
-                let cy = yMin + ry * (yMax - yMin);
+                const xSpan = xMax - xMin;
+                const ySpan = yMax - yMin;
 
-                let zoomFactor = e.deltaY < 0 ? 0.85 : 1.18;
-                applyZoom(cx, cy, rx, ry, zoomFactor);
-            }, { passive: false });
+                const xShift = (dx / rect.width) * xSpan;
+                const yShift = (dy / rect.height) * ySpan;
 
-            canvas.addEventListener('mousedown', (e) => {
-                if (e.button !== 0) return;
-                isDragging = true;
-                startX = e.clientX;
-                startY = e.clientY;
-
-                initialXMin = parseFloat(document.getElementById('graphXMin').value) || -10;
-                initialXMax = parseFloat(document.getElementById('graphXMax').value) || 10;
-                initialYMin = parseFloat(document.getElementById('graphYMin').value) || -5;
-                initialYMax = parseFloat(document.getElementById('graphYMax').value) || 5;
-            });
-
-            window.addEventListener('mousemove', (e) => {
-                if (!isDragging) return;
-
-                const rect = canvas.getBoundingClientRect();
-                const dx = e.clientX - startX;
-                const dy = e.clientY - startY;
-
-                const xSpan = initialXMax - initialXMin;
-                const ySpan = initialYMax - initialYMin;
-
-                const deltaX = (dx / rect.width) * xSpan;
-                const deltaY = (dy / rect.height) * ySpan;
-
-                document.getElementById('graphXMin').value = parseFloat((initialXMin - deltaX).toFixed(2));
-                document.getElementById('graphXMax').value = parseFloat((initialXMax - deltaX).toFixed(2));
-                document.getElementById('graphYMin').value = parseFloat((initialYMin + deltaY).toFixed(2));
-                document.getElementById('graphYMax').value = parseFloat((initialYMax + deltaY).toFixed(2));
+                document.getElementById('graphXMin').value = parseFloat((xMin - xShift).toFixed(2));
+                document.getElementById('graphXMax').value = parseFloat((xMax - xShift).toFixed(2));
+                document.getElementById('graphYMin').value = parseFloat((yMin + yShift).toFixed(2));
+                document.getElementById('graphYMax').value = parseFloat((yMax + yShift).toFixed(2));
 
                 document.getElementById('autoYToggle').checked = false;
                 drawGraph();
             });
 
-            window.addEventListener('mouseup', () => {
-                isDragging = false;
-            });
+            window.addEventListener('mouseup', () => { isDraggingGraph = false; });
+        }
 
-            canvas.addEventListener('touchstart', (e) => {
-                if (e.touches.length === 1) {
-                    isDragging = true;
-                    startX = e.touches[0].clientX;
-                    startY = e.touches[0].clientY;
-                    initialXMin = parseFloat(document.getElementById('graphXMin').value) || -10;
-                    initialXMax = parseFloat(document.getElementById('graphXMax').value) || 10;
-                    initialYMin = parseFloat(document.getElementById('graphYMin').value) || -5;
-                    initialYMax = parseFloat(document.getElementById('graphYMax').value) || 5;
-                } else if (e.touches.length === 2) {
-                    isDragging = false;
-                    initialPinchZoom = true;
-                    touchStartDist = Math.hypot(
-                        e.touches[0].clientX - e.touches[1].clientX,
-                        e.touches[0].clientY - e.touches[1].clientY
-                    );
+        function applyZoom(factor) {
+            let xMin = parseFloat(document.getElementById('graphXMin').value) || -10;
+            let xMax = parseFloat(document.getElementById('graphXMax').value) || 10;
+            let yMin = parseFloat(document.getElementById('graphYMin').value) || -5;
+            let yMax = parseFloat(document.getElementById('graphYMax').value) || 5;
+
+            const xCenter = (xMin + xMax) / 2;
+            const yCenter = (yMin + yMax) / 2;
+
+            const xSpan = (xMax - xMin) * factor;
+            const ySpan = (yMax - yMin) * factor;
+
+            document.getElementById('graphXMin').value = parseFloat((xCenter - xSpan / 2).toFixed(2));
+            document.getElementById('graphXMax').value = parseFloat((xCenter + xSpan / 2).toFixed(2));
+            document.getElementById('graphYMin').value = parseFloat((yCenter - ySpan / 2).toFixed(2));
+            document.getElementById('graphYMax').value = parseFloat((yCenter + ySpan / 2).toFixed(2));
+
+            document.getElementById('autoYToggle').checked = false;
+            drawGraph();
+        }
+
+        function zoomInGraph() { applyZoom(0.8); }
+        function zoomOutGraph() { applyZoom(1.25); }
+
+        function resetGraphZoom() {
+            document.getElementById('graphXMin').value = '-10';
+            document.getElementById('graphXMax').value = '10';
+            document.getElementById('graphYMin').value = '-5';
+            document.getElementById('graphYMax').value = '5';
+            document.getElementById('autoYToggle').checked = true;
+            drawGraph();
+        }
+
+        function updateTooltip(e, canvas) {
+            const rect = canvas.getBoundingClientRect();
+            const tooltip = document.getElementById('graphTooltip');
+            if (!tooltip) return;
+
+            const mx = e.clientX - rect.left;
+            const my = e.clientY - rect.top;
+
+            if (mx < 0 || mx > rect.width || my < 0 || my > rect.height) {
+                tooltip.classList.add('hidden');
+                return;
+            }
+
+            let xMin = parseFloat(document.getElementById('graphXMin').value) || -10;
+            let xMax = parseFloat(document.getElementById('graphXMax').value) || 10;
+            let yMin = parseFloat(document.getElementById('graphYMin').value) || -5;
+            let yMax = parseFloat(document.getElementById('graphYMax').value) || 5;
+
+            const mathX = xMin + (mx / rect.width) * (xMax - xMin);
+            const mathY = yMax - (my / rect.height) * (yMax - yMin);
+
+            document.getElementById('tooltipX').textContent = mathX.toFixed(2);
+            document.getElementById('tooltipY').textContent = mathY.toFixed(2);
+
+            tooltip.style.left = `${mx + 12}px`;
+            tooltip.style.top = `${my + 12}px`;
+            tooltip.classList.remove('hidden');
+        }
+
+        async function copyGraphToClipboard() {
+            const canvas = document.getElementById('graphCanvas');
+            if (!canvas) return;
+
+            canvas.toBlob(async (blob) => {
+                if (!blob) return;
+                let copied = false;
+                if (navigator.clipboard && window.ClipboardItem) {
+                    try {
+                        await navigator.clipboard.write([ new ClipboardItem({ 'image/png': blob }) ]);
+                        copied = true;
+                        showToast("Graph PNG copied to clipboard!");
+                    } catch(e){}
                 }
-            }, { passive: true });
-
-            canvas.addEventListener('touchmove', (e) => {
-                if (isDragging && e.touches.length === 1) {
-                    const rect = canvas.getBoundingClientRect();
-                    const dx = e.touches[0].clientX - startX;
-                    const dy = e.touches[0].clientY - startY;
-
-                    const xSpan = initialXMax - initialXMin;
-                    const ySpan = initialYMax - initialYMin;
-
-                    const deltaX = (dx / rect.width) * xSpan;
-                    const deltaY = (dy / rect.height) * ySpan;
-
-                    document.getElementById('graphXMin').value = parseFloat((initialXMin - deltaX).toFixed(2));
-                    document.getElementById('graphXMax').value = parseFloat((initialXMax - deltaX).toFixed(2));
-                    document.getElementById('graphYMin').value = parseFloat((initialYMin + deltaY).toFixed(2));
-                    document.getElementById('graphYMax').value = parseFloat((initialYMax + deltaY).toFixed(2));
-
-                    document.getElementById('autoYToggle').checked = false;
-                    drawGraph();
-                } else if (initialPinchZoom && e.touches.length === 2) {
-                    const currentDist = Math.hypot(
-                        e.touches[0].clientX - e.touches[1].clientX,
-                        e.touches[0].clientY - e.touches[1].clientY
-                    );
-
-                    if (touchStartDist > 0 && Math.abs(currentDist - touchStartDist) > 8) {
-                        const factor = touchStartDist / currentDist;
-                        zoomAtCenter(factor > 1 ? 1.05 : 0.95);
-                        touchStartDist = currentDist;
-                    }
+                if (!copied) {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'piecewise-graph.png';
+                    a.click();
+                    setTimeout(() => URL.revokeObjectURL(url), 1000);
+                    showToast("Downloaded graph image!");
                 }
-            }, { passive: true });
-
-            canvas.addEventListener('touchend', () => {
-                isDragging = false;
-                initialPinchZoom = false;
             });
+        }
+
+        function downloadGraphImage() {
+            const canvas = document.getElementById('graphCanvas');
+            if (!canvas) return;
+            const a = document.createElement('a');
+            a.href = canvas.toDataURL('image/png');
+            a.download = 'piecewise-graph.png';
+            a.click();
+            showToast("Graph PNG downloaded!");
         }
     </script>
 </body>
