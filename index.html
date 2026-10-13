@@ -658,21 +658,21 @@
             if (piece.mode === 'raw') {
                 let cond = piece.condExpr || '';
                 if (!cond.includes('\\')) {
-                    cond = cond.replace(/(?<!\\)<=/g, '\\le ')
-                               .replace(/(?<!\\)>=/g, '\\ge ')
-                               .replace(/(?<!\\)!=/g, '\\neq ');
+                    cond = cond.replace(/<=/g, '\\le ')
+                               .replace(/>=/g, '\\ge ')
+                               .replace(/!=/g, '\\neq ');
                 }
-                return cond.replace(/(?<![\\a-zA-Z])pi\b/g, '\\pi')
-                           .replace(/(?<![\\a-zA-Z])infty\b/g, '\\infty');
+                return cond.replace(/pi\b/g, '\\pi')
+                           .replace(/infty\b/g, '\\infty');
             }
             
             let min = piece.minVal.trim();
             let max = piece.maxVal.trim();
 
-            min = min.replace(/(?<!\\)<=/g, '\\le ').replace(/(?<!\\)>=/g, '\\ge ').replace(/(?<!\\)!=/g, '\\neq ')
-                     .replace(/(?<![\\a-zA-Z])pi\b/g, '\\pi').replace(/(?<![\\a-zA-Z])infty\b/g, '\\infty');
-            max = max.replace(/(?<!\\)<=/g, '\\le ').replace(/(?<!\\)>=/g, '\\ge ').replace(/(?<!\\)!=/g, '\\neq ')
-                     .replace(/(?<![\\a-zA-Z])pi\b/g, '\\pi').replace(/(?<![\\a-zA-Z])infty\b/g, '\\infty');
+            min = min.replace(/<=/g, '\\le ').replace(/>=/g, '\\ge ').replace(/!=/g, '\\neq ')
+                     .replace(/pi\b/g, '\\pi').replace(/infty\b/g, '\\infty');
+            max = max.replace(/<=/g, '\\le ').replace(/>=/g, '\\ge ').replace(/!=/g, '\\neq ')
+                     .replace(/pi\b/g, '\\pi').replace(/infty\b/g, '\\infty');
 
             const minOp = piece.minInc ? '\\le' : '<';
             const maxOp = piece.maxInc ? '\\le' : '<';
@@ -694,11 +694,11 @@
                 s = s.replace(regex, '\\' + fn);
             });
 
-            s = s.replace(/(?<![\\a-zA-Z])sqrt\s*\(([^()]+)\)/g, '\\sqrt{$1}');
-            s = s.replace(/(?<![\\a-zA-Z])abs\s*\(([^()]+)\)/g, '\\left|$1\\right|');
+            s = s.replace(/sqrt\s*\(([^()]+)\)/g, '\\sqrt{$1}');
+            s = s.replace(/abs\s*\(([^()]+)\)/g, '\\left|$1\\right|');
             s = s.replace(/([a-zA-Z0-9_\^\+\-\*]+)\s*\/\s*([a-zA-Z0-9_\^\+\-\*]+)/g, '\\frac{$1}{$2}');
-            s = s.replace(/(?<![\\a-zA-Z])pi\b/g, '\\pi');
-            s = s.replace(/(?<![\\a-zA-Z])infty\b/g, '\\infty');
+            s = s.replace(/pi\b/g, '\\pi');
+            s = s.replace(/infty\b/g, '\\infty');
             s = s.replace(/\*/g, ' ');
 
             return s;
@@ -706,7 +706,7 @@
 
         function sanitizeLatexForMathJS(str) {
             if (!str) return '';
-            return str
+            let s = str
                 .replace(/\\pi/g, 'pi')
                 .replace(/\\infty/g, 'Infinity')
                 .replace(/\\le(q)?/g, '<=')
@@ -717,6 +717,10 @@
                 .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '($1)/($2)')
                 .replace(/\\left|\\right/g, '')
                 .replace(/\\/g, '');
+
+            // Add implicit multiplication for cases like 2x or 3pi
+            s = s.replace(/(\d+)\s*([a-zA-Z])/g, '$1*$2');
+            return s;
         }
 
         function renderKaTeX() {
@@ -1271,7 +1275,8 @@
 
                 if (Math.abs(x) > 1e-6) {
                     const sy = Math.min(Math.max(toScreenY(0) + 12, 12), displayHeight - 4);
-                    ctx.fillText(x.toFixed(xStep < 1 ? 1 : 0), sx - 6, sy);
+                    const labelVal = parseFloat(x.toFixed(4)).toString();
+                    ctx.fillText(labelVal, sx - 6, sy);
                 }
             }
 
@@ -1285,11 +1290,13 @@
 
                 if (Math.abs(y) > 1e-6) {
                     const sx = Math.min(Math.max(toScreenX(0) + 4, 4), displayWidth - 24);
-                    ctx.fillText(y.toFixed(yStep < 1 ? 1 : 0), sx, sy - 3);
+                    const labelVal = parseFloat(y.toFixed(4)).toString();
+                    ctx.fillText(labelVal, sx, sy - 3);
                 }
             }
 
             ctx.strokeStyle = axisColor;
+            ctx.fillStyle = axisColor;
             ctx.lineWidth = 2;
 
             const originX = toScreenX(0);
@@ -1298,6 +1305,10 @@
                 ctx.moveTo(originX, 0);
                 ctx.lineTo(originX, displayHeight);
                 ctx.stroke();
+
+                // Y-axis Arrowheads
+                drawArrowhead(ctx, originX, 0, -Math.PI / 2);
+                drawArrowhead(ctx, originX, displayHeight, Math.PI / 2);
             }
 
             const originY = toScreenY(0);
@@ -1306,6 +1317,10 @@
                 ctx.moveTo(0, originY);
                 ctx.lineTo(displayWidth, originY);
                 ctx.stroke();
+
+                // X-axis Arrowheads
+                drawArrowhead(ctx, 0, originY, Math.PI);
+                drawArrowhead(ctx, displayWidth, originY, 0);
             }
 
             pieces.forEach((piece, index) => {
@@ -1360,6 +1375,19 @@
             ctx.restore();
         }
 
+        function drawArrowhead(ctx, x, y, angle) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(-7, -4);
+            ctx.lineTo(-7, 4);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+
         function autoStep(range) {
             const rawStep = range / 8;
             const mag = Math.pow(10, Math.floor(Math.log10(rawStep)));
@@ -1374,10 +1402,25 @@
             if (piece.mode !== 'bounded') return;
 
             const vr = getVar();
-            let minVal = parseFloat(sanitizeLatexForMathJS(piece.minVal));
-            let maxVal = parseFloat(sanitizeLatexForMathJS(piece.maxVal));
+            let minValStr = sanitizeLatexForMathJS(piece.minVal.trim());
+            let maxValStr = sanitizeLatexForMathJS(piece.maxVal.trim());
 
-            if (!isNaN(minVal)) {
+            let minVal = NaN;
+            let maxVal = NaN;
+
+            try {
+                if (minValStr !== '') minVal = parseFloat(math.evaluate(minValStr));
+            } catch (e) {
+                minVal = minValStr !== '' ? parseFloat(minValStr) : NaN;
+            }
+
+            try {
+                if (maxValStr !== '') maxVal = parseFloat(math.evaluate(maxValStr));
+            } catch (e) {
+                maxVal = maxValStr !== '' ? parseFloat(maxValStr) : NaN;
+            }
+
+            if (!isNaN(minVal) && isFinite(minVal)) {
                 try {
                     let scope = {}; scope[vr] = minVal;
                     let y = math.evaluate(piece.expr, scope);
@@ -1387,7 +1430,7 @@
                 } catch(e){}
             }
 
-            if (!isNaN(maxVal)) {
+            if (!isNaN(maxVal) && isFinite(maxVal)) {
                 try {
                     let scope = {}; scope[vr] = maxVal;
                     let y = math.evaluate(piece.expr, scope);
