@@ -1208,14 +1208,37 @@
                 textColor = '#0c4a6e';
             } else if (styleKey === 'transparent-dark') {
                 bgColor = 'transparent';
-                gridColor = 'rgba(255, 255, 255, 0.12)';
+                gridColor = 'rgba(255, 255, 255, 0.15)';
                 axisColor = '#e2e8f0';
                 textColor = '#f8fafc';
             } else if (styleKey === 'transparent-light') {
                 bgColor = 'transparent';
-                gridColor = 'rgba(0, 0, 0, 0.12)';
+                gridColor = 'rgba(15, 23, 42, 0.15)';
                 axisColor = '#1e293b';
                 textColor = '#0f172a';
+            }
+
+            // Update UI canvas wrapper background preview so transparent styles remain legible on screen
+            const wrapper = document.getElementById('canvasWrapper');
+            if (wrapper) {
+                if (styleKey === 'worksheet') {
+                    wrapper.style.backgroundColor = '#ffffff';
+                    wrapper.style.backgroundImage = 'none';
+                } else if (styleKey === 'gridpaper') {
+                    wrapper.style.backgroundColor = '#f0f9ff';
+                    wrapper.style.backgroundImage = 'none';
+                } else if (styleKey === 'transparent-light') {
+                    wrapper.style.backgroundColor = '#f8fafc';
+                    wrapper.style.backgroundImage = 'radial-gradient(#cbd5e1 1.2px, transparent 1.2px)';
+                    wrapper.style.backgroundSize = '16px 16px';
+                } else if (styleKey === 'transparent-dark') {
+                    wrapper.style.backgroundColor = '#020617';
+                    wrapper.style.backgroundImage = 'radial-gradient(rgba(255, 255, 255, 0.12) 1.2px, transparent 1.2px)';
+                    wrapper.style.backgroundSize = '16px 16px';
+                } else {
+                    wrapper.style.backgroundColor = '#020617';
+                    wrapper.style.backgroundImage = 'none';
+                }
             }
 
             ctx.clearRect(0, 0, displayWidth, displayHeight);
@@ -1331,7 +1354,7 @@
                 }
                 ctx.stroke();
 
-                drawEndpointDots(ctx, piece, color, toScreenX, toScreenY);
+                drawEndpointDots(ctx, piece, color, toScreenX, toScreenY, bgColor);
             });
 
             ctx.restore();
@@ -1347,7 +1370,7 @@
             return 10 * mag;
         }
 
-        function drawEndpointDots(ctx, piece, color, toScreenX, toScreenY) {
+        function drawEndpointDots(ctx, piece, color, toScreenX, toScreenY, bgColor) {
             if (piece.mode !== 'bounded') return;
 
             const vr = getVar();
@@ -1359,7 +1382,7 @@
                     let scope = {}; scope[vr] = minVal;
                     let y = math.evaluate(piece.expr, scope);
                     if (!isNaN(y) && isFinite(y)) {
-                        drawDot(ctx, toScreenX(minVal), toScreenY(y), color, piece.minInc);
+                        drawDot(ctx, toScreenX(minVal), toScreenY(y), color, piece.minInc, bgColor);
                     }
                 } catch(e){}
             }
@@ -1369,23 +1392,31 @@
                     let scope = {}; scope[vr] = maxVal;
                     let y = math.evaluate(piece.expr, scope);
                     if (!isNaN(y) && isFinite(y)) {
-                        drawDot(ctx, toScreenX(maxVal), toScreenY(y), color, piece.maxInc);
+                        drawDot(ctx, toScreenX(maxVal), toScreenY(y), color, piece.maxInc, bgColor);
                     }
                 } catch(e){}
             }
         }
 
-        function drawDot(ctx, x, y, color, isSolid) {
+        function drawDot(ctx, x, y, color, isSolid, bgColor) {
             ctx.save();
             ctx.beginPath();
-            ctx.arc(x, y, 4.5, 0, Math.PI * 2);
+            ctx.arc(x, y, 5, 0, Math.PI * 2);
             if (isSolid) {
                 ctx.fillStyle = color;
                 ctx.fill();
             } else {
-                ctx.fillStyle = '#0f172a';
-                ctx.fill();
-                ctx.lineWidth = 2;
+                if (bgColor && bgColor !== 'transparent') {
+                    ctx.fillStyle = bgColor;
+                    ctx.fill();
+                } else {
+                    ctx.save();
+                    ctx.globalCompositeOperation = 'destination-out';
+                    ctx.fillStyle = '#000000';
+                    ctx.fill();
+                    ctx.restore();
+                }
+                ctx.lineWidth = 2.5;
                 ctx.strokeStyle = color;
                 ctx.stroke();
             }
